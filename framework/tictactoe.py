@@ -28,7 +28,7 @@ class TicTacToe(Game):
     def moves(self):
         if self.results():  # In order to avoid returning both moves and results.
             return None
-        return [self._Move(square) for square in xrange(9) if self.board[square] == '.']
+        return [self._Move(square) for square in range(9) if self.board[square] == '.']
 
     def results(self):
         lines = [ln for ln in board_lines(self.board, 3, 3) if len(ln) == 3]
@@ -91,4 +91,4 @@ if __name__ == '__main__':
     from _base import run_match
 
     run_match(TicTacToe(), MiniMaxAgent('Computer', 3, heuristic=TicTacToe.simple_heuristic), FileAgent(name='Human'))
-    # print run_match(TicTacToe(), RandomAgent(), MiniMaxAgent())
+    # print(run_match(TicTacToe(), RandomAgent(), MiniMaxAgent()))

@@ -30,10 +30,10 @@ class Toads_Frogs(Game):
 
     def moves(self):
         if not self.enabled:  # Toads move
-            moves = [self._Move(pos) for pos in xrange(len(self.board)) if
+            moves = [self._Move(pos) for pos in range(len(self.board)) if
                      self.board[pos:].startswith('T_') or self.board[pos:].startswith('TF_')]
         else:  # Frogs move
-            moves = [self._Move(pos) for pos in xrange(len(self.board)) if
+            moves = [self._Move(pos) for pos in range(len(self.board)) if
                      self.board[:pos + 1].endswith('_F') or self.board[:pos + 1].endswith('_TF')]
         return moves
 
@@ -98,8 +98,8 @@ if __name__ == '__main__':
 
     # for move_number, moves, game_state in match(Toads_Frogs(None, 0, 5, 4), RandomAgent(name='Agent1'), RandomAgent(name='Agent2')):
     #     if move_number is not None:
-    #         print '%d: %s -> %r' % (move_number, moves, game_state)
+    #         print('%d: %s -> %r' % (move_number, moves, game_state))
     #     else:
-    #         print 'Result: %s' % (moves)
-    #         print 'Final board: %r'  % (game_state)
+    #         print('Result: %s' % (moves))
+    #         print('Final board: %r' % (game_state))
     run_match(Toads_Frogs(None, 0, 5, 4), RandomAgent(), FileAgent(name='Human'))

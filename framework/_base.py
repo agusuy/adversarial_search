@@ -62,7 +62,7 @@ def match(game, *agents_list, **agents):
     """
     for player, agent in zip(game.players, agents_list):
         agents[player] = agent
-    for player, agent in agents.iteritems():  # Tells all agents the match begins.
+    for player, agent in agents.items():  # Tells all agents the match begins.
         agent.match_begins(player, game)
     move_num = 0
     yield (move_num, agents, game)
@@ -70,13 +70,13 @@ def match(game, *agents_list, **agents):
     while not results:  # Game is not over.
         chosen_move = agents[game.active_player()].decision(game)
         next_game = game.next(chosen_move)
-        for player, agent in agents.iteritems():  # Tells all agents about the moves.
+        for player, agent in agents.items():  # Tells all agents about the moves.
             agent.match_moves(game, chosen_move, next_game)
         game = next_game
         move_num += 1
         yield (move_num, chosen_move, game)
         results = game.results()
-    for player, agent in agents.iteritems():  # Tells all agentes the match ends.
+    for player, agent in agents.items():  # Tells all agentes the match ends.
         agent.match_ends(game)
     yield (None, results, game)
 

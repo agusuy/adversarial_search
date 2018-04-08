@@ -21,11 +21,11 @@ class GameTest(unittest.TestCase):
         # TODO - player_turns: maximum number of consecutive turns a player may have.
         # TODO - alternated: checks players alternate in turns.  
         zero_sum = checks.get('zero_sum', False)
-        rnd = random.Random(123456L)
+        rnd = random.Random(123456)
 
-        for _ in xrange(100):
+        for _ in range(100):
             game = Game()
-            for _ in xrange(100):
+            for _ in range(100):
                 moves = game.moves()
                 results = game.results()
                 if results is None:
@@ -37,7 +37,7 @@ class GameTest(unittest.TestCase):
                 else:
                     self.assertFalse(moves, "Results and moves: %r %r %r" % (game, results, moves))
                     # Zero sum results check.
-                    zero_sum and self.assertEquals(sum(results.itervalues()), 0, "Nonzero sum: %r %r" % (game, results))
+                    zero_sum and self.assertEqual(sum(results.values()), 0, "Nonzero sum: %r %r" % (game, results))
                     break
 
     def trace_test(self, game, *trace, **results):
@@ -52,7 +52,7 @@ class GameTest(unittest.TestCase):
         for ply in trace:
             if len(ply) > 2:
                 game_repr, player, move = ply
-                self.assertEquals('%r' % game, game_repr)
+                self.assertEqual('%r' % game, game_repr)
             else:
                 player, move = ply
             moves = game.moves()
@@ -65,7 +65,7 @@ class GameTest(unittest.TestCase):
                 move = [m for m in moves if str(m) == move][0]
             self.assertIsNone(game.results())
             game1 = game.next(move)
-            self.assertNotEquals(game, game1)
+            self.assertNotEqual(game, game1)
             game = game1
         if not results:
             self.assertIsNone(game.results())
@@ -88,7 +88,7 @@ class Silly(base.Game):
         continues playing or he enables the other player.
     """
     RESULTS = {'+': 1, '=': 0, '-': -1, 'A': None, 'B': None}
-    PLAYERS = tuple([j for j, r in RESULTS.iteritems() if r is None])
+    PLAYERS = tuple([j for j, r in RESULTS.items() if r is None])
 
     def __init__(self, state='A', result=None):
         base.Game.__init__(self, *Silly.PLAYERS)
@@ -100,7 +100,7 @@ class Silly(base.Game):
 
     def moves(self):
         if self._result is None:
-            return Silly.RESULTS.keys()
+            return list(Silly.RESULTS.keys())
         else:
             return []
 
