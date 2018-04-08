@@ -34,7 +34,7 @@ class TestAgents(unittest.TestCase):
         self.assertBetterThanRandom(AlphaBetaAgent(), game)
 
     def testTicTacToe(self):
-        rand = random.Random(123456789L)
+        rand = random.Random(123456789)
         game = TicTacToe()
         minimax_agents = [MiniMaxAgent, AlphaBetaAgent]
 

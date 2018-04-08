@@ -48,7 +48,7 @@ def randgen(x):
     """ If x is None returns random.Random(). If x is None or is int or long,
         returns random.Random(x).
     """
-    return random.Random(x) if x is None or type(x) in [long, int] else x
+    return random.Random(x) if x is None or type(x) == int else x
 
 
 # Funciones de manejo del tablero ##############################################
@@ -57,38 +57,38 @@ def print_board(board, rows, cols, row_sep='', col_sep='', joint_sep='', row_fmt
     """ Retorna el tablero en formato tabular.
     """
     row_sep = row_fmt % joint_sep.join(row_sep * cols) if row_sep else ''
-    return row_sep.join([row_fmt % col_sep.join(board[row * cols:(row + 1) * cols]) for row in xrange(rows)])
+    return row_sep.join([row_fmt % col_sep.join(board[row * cols:(row + 1) * cols]) for row in range(rows)])
 
 
 def board_rows(board, rows, cols):
     """ Retorna las filas de un tablero con sus casillas.
     """
-    return [''.join(board[row * cols:(row + 1) * cols]) for row in xrange(rows)]
+    return [''.join(board[row * cols:(row + 1) * cols]) for row in range(rows)]
 
 
 def board_columns(board, rows, cols):
     """ Retorna las columnas de un tablero con sus casillas.
     """
-    return [''.join([board[row * cols + col] for row in xrange(rows)]) for col in xrange(cols)]
+    return [''.join([board[row * cols + col] for row in range(rows)]) for col in range(cols)]
 
 
 def board_indexed(board, rows, cols):
     """ Retorna las casillas del tablero indexadas, es decir tuplas (fila, 
         columna, casilla).
     """
-    return [(row, col, board[row * cols + col]) for row in xrange(rows) for col in xrange(cols)]
+    return [(row, col, board[row * cols + col]) for row in range(rows) for col in range(cols)]
 
 
 def board_pdiags(board, rows, cols):
     """ Retorna las diagonales positivas del tablero con sus casillas.
     """
-    return [''.join([b for r, c, b in board_indexed(board, rows, cols) if s == r + c]) for s in xrange(rows + cols - 1)]
+    return [''.join([b for r, c, b in board_indexed(board, rows, cols) if s == r + c]) for s in range(rows + cols - 1)]
 
 
 def board_ndiags(board, rows, cols):
     """ Retorna las diagonales negativas del tablero con sus casillas.
     """
-    return [''.join([b for r, c, b in board_indexed(board, rows, cols) if s == c - r]) for s in xrange(1 - rows, cols)]
+    return [''.join([b for r, c, b in board_indexed(board, rows, cols) if s == c - r]) for s in range(1 - rows, cols)]
 
 
 def board_diags(board, rows, cols):

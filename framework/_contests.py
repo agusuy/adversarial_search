@@ -31,7 +31,7 @@ class Stats():
     def clear(self):
         """ Clears all statistics.
         """
-        for stat in self._stats.itervalues():
+        for stat in self._stats.values():
             stat.clear()
 
     def inc(self, stat, key):
@@ -47,7 +47,7 @@ class Stats():
         """
         if move_num is None:  # Finished match.
             results = d
-            for player, agent in agents.iteritems():
+            for player, agent in agents.items():
                 self.keys.setdefault(agent, agent.name)
                 self.keys.setdefault(player, str(player))
                 self.inc(self.matches_played, agent)
@@ -68,10 +68,10 @@ class Stats():
     def __str__(self):
         """ Prints the statistics gathered in tabular form.
         """
-        keys = self.keys.keys()
-        keys.sort(lambda a1, a2: cmp(a1, a2))
-        return ','.join(self._stats.iterkeys()) + '\n' + '\n'.join(
-            [','.join([str(stat[key]) for stat in self._stats.itervalues()]) for key in keys])
+        keys = list(self.keys.keys())
+        # keys.sort(lambda a1, a2: cmp(a1, a2))
+        return ','.join(self._stats.keys()) + '\n' + '\n'.join(
+            [','.join([str(stat[key]) for stat in self._stats.values()]) for key in keys])
 
 
 class Contest(object):
@@ -92,7 +92,7 @@ class Contest(object):
             stats is a dict with the statistics gathered for each agent.
         """
         self.stats.clear()  # Erases previous statistics.
-        for match_num, (game, agents) in zip(xrange(10 ** 5), matches):
+        for match_num, (game, agents) in zip(range(10 ** 5), matches):
             for move_num, d, g in match(game, **agents):
                 self.stats.process(agents, match_num, move_num, d, g)
                 yield (match_num, move_num, d, g)
@@ -131,7 +131,7 @@ class AllAgainstAll_Contest(Contest):
     def run(self):
         players = self.game.players
         arrays = itertools.permutations(self.agents, len(players))
-        matches = [(self.game, dict(zip(players, array))) for array in arrays for _ in xrange(self.count)]
+        matches = [(self.game, dict(zip(players, array))) for array in arrays for _ in range(self.count)]
         return Contest.run(self, matches)
 
 
@@ -186,7 +186,7 @@ class Sort_Contest(Contest):
         agents = dict(zip(players, [agent1, agent2]))
         results_agent1 = []
         results_agent2 = []
-        for _ in xrange(self.count):
+        for _ in range(self.count):
             m = list(match(self.game, **agents))
             self.__matches__.append((agents, m))
             _, results, _ = m[-1]
@@ -198,7 +198,7 @@ class Sort_Contest(Contest):
         self.__matches__ = []
         self.agents.sort(self.comp_fun)
         self.stats.clear()  # Erases previous statistics.
-        for match_num, (agents, moves) in zip(xrange(len(self.__matches__)), self.__matches__):
+        for match_num, (agents, moves) in zip(range(len(self.__matches__)), self.__matches__):
             for move_num, d, g in moves:
                 self.stats.process(agents, match_num, move_num, d, g)
                 yield (match_num, move_num, d, g)
@@ -218,7 +218,7 @@ class Pyramid_Contest(Contest):
         """ TODO
         winners = list(self.agents)
         iter_agents = itertools.cycle(winners)
-        matches = [[iter_agents.next() for _ in xrange(len(players))] for _ in xrange(round(len(winners) / 2.0))]
+        matches = [[iter_agents.next() for _ in range(len(players))] for _ in range(round(len(winners) / 2.0))]
         """
 
 
@@ -227,6 +227,6 @@ if __name__ == '__main__':
     from _agents import RandomAgent, MiniMaxAgent
 
     rnd = random.Random()
-    agentes = [RandomAgent(rnd, 'RandomAgent_%05d' % i) for i in xrange(1)]
-    agentes.extend([MiniMaxAgent('MiniMaxAgent_%05d' % i, 3, rnd) for i in xrange(1)])
-    print complete(AllAgainstAll_Contest(TicTacToe(), agentes, 5))
+    agentes = [RandomAgent(rnd, 'RandomAgent_%05d' % i) for i in range(1)]
+    agentes.extend([MiniMaxAgent('MiniMaxAgent_%05d' % i, 3, rnd) for i in range(1)])
+    print(complete(AllAgainstAll_Contest(TicTacToe(), agentes, 5)))
