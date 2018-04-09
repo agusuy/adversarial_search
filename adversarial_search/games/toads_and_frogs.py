@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from ..core import Game
-from ..utils import coord_id, print_board, resultado
+from ..utils import coord_id, print_board, game_result
 
 class Toads_Frogs(Game):
     """ Game component for Toads and Frogs
@@ -40,7 +40,7 @@ class Toads_Frogs(Game):
         else:
             moves = '_F' in self.board or '_TF' in self.board
         if not moves:
-            return resultado(enabled_player, self.players, -1)
+            return game_result(enabled_player, self.players, -1)
         return None
 
     def next(self, move):
