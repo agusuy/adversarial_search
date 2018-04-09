@@ -193,5 +193,14 @@ class Test_Toads_Frogs(GameTest): ##############################################
             T[TFFT_] Toads a4
             """, Toads=1, Frogs=-1)
 
+Cuanteti = adversarial_search.games.cuanteti.Cuanteti
+
+class Test_Cuanteti(GameTest): ####################################################################
+    """ Cuanteti testcases.
+    """
+
+    def test_basic(self):
+        self.basic_test(Cuanteti, zero_sum=True, enabled_players=1)
+
 if __name__ == "__main__": #########################################################################
     unittest.main()
