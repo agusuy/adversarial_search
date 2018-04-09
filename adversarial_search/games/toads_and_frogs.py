@@ -67,7 +67,7 @@ def run_test_game(agent1=None, agent2=None):
         from ..agents.random import RandomAgent
         agent1 = RandomAgent(name='Computer')
     if not agent2:
-        from ..agents.file import FileAgent
+        from ..agents.files import FileAgent
         agent2 = FileAgent(name='Human')
     from ..core import run_match
     run_match(Toads_Frogs(None, 0, 5, 4), agent1, agent2)
