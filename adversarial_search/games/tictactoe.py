@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from ..core import Game
-from ..utils import coord_id, board_lines, print_board, resultado, cached_property, cached_indexed_property
+from ..utils import coord_id, board_lines, print_board, game_result, cached_property, cached_indexed_property
 
 class TicTacToe(Game):
     """ Game component for TicTacToe.
@@ -31,7 +31,7 @@ class TicTacToe(Game):
         if not result_Xs and [ln for ln in lines if '.' in ln]:
             # Sin l�neas y con casillas a�n vac�as.
             result_Xs = None
-        return resultado('Xs', self.players, result_Xs)
+        return game_result('Xs', self.players, result_Xs)
 
     @cached_indexed_property('__next__')
     def next(self, move):

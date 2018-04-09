@@ -95,7 +95,7 @@ class Silly(Game): #############################################################
             return []
 
     def results(self):
-        return utils.resultado(self.state, self.players, self._result)
+        return utils.game_result(self.state, self.players, self._result)
 
     def next(self, move):
         result = Silly.RESULTS[move]
