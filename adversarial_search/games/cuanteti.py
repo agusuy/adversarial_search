@@ -50,8 +50,8 @@ class Cuanteti(Game):
 
 def run_test_game(agent1=None, agent2=None):
     if not agent1:
-        from ..agents.minimax import MiniMaxAgent
-        agent1 = MiniMaxAgent('Computer', 3)
+        from ..agents.mcts import MCTSAgent
+        agent1 = MCTSAgent('Computer', simulationCount=10)
     if not agent2:
         from ..agents.files import FileAgent
         agent2 = FileAgent(name='Human')
