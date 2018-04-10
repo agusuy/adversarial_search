@@ -25,10 +25,14 @@ class Cuanteti(Game):
 
     def results(self):
         if not self.moves():
-            result_Xs = sum(len(ln) - 2 for ln in board_lines(self.board, 4, 4) 
-                if len(ln) > 2 and ln == 'X' * len(ln))
-            result_Os = sum(len(ln) - 2 for ln in board_lines(self.board, 4, 4) 
-                if len(ln) > 2 and ln == 'O' * len(ln))
+            result_Xs = sum(len(ln) - 2 if ln == 'X' * len(ln) else 1
+                for ln in board_lines(self.board, 4, 4)
+                if len(ln) > 2 and (ln == 'X' * len(ln) or 'XXX' in ln))
+            result_Os = sum(len(ln) - 2 if ln == 'O' * len(ln) else 1
+                for ln in board_lines(self.board, 4, 4)
+                if len(ln) > 2 and (ln == 'O' * len(ln) or 'OOO' in ln))
+            #print (list(board_lines(self.board, 4, 4)))
+            #print (result_Xs, result_Os)
             return game_result('Xs', self.players, result_Xs - result_Os)
         else:
             return None
