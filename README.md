@@ -1,1 +1,1 @@
-# adversarial_search
+# Adversarial Search Framework
