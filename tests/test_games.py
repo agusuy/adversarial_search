@@ -166,7 +166,7 @@ class Test_TicTacToe(GameTest): ################################################
             O[OXX.O..X.] Os c3
             """, Xs=-1, Os=1)
 
-Toads_Frogs = adversarial_search.games.toads_and_frogs.Toads_Frogs
+Toads_Frogs = adversarial_search.games.toads_and_frogs.ToadsFrogs
 
 class Test_Toads_Frogs(GameTest): ##################################################################
     """ Toads and Frogs testcases

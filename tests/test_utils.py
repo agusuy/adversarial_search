@@ -35,7 +35,7 @@ class Test_utils(unittest.TestCase):
         """
         board_rows = utils.board_rows
         board_columns = utils.board_columns
-        board_orths = utils.board_orths
+        board_orths = utils.board_orthogonal
 
         def _test_orths(board, row_num, col_num, rows, cols):
             self.assertEqual(rows, board_rows(board, row_num, col_num))
@@ -54,9 +54,9 @@ class Test_utils(unittest.TestCase):
         """ Testing diagonal lines (functions board_pdiags, board_ndiags, 
             board_diags).
         """
-        board_pdiags = utils.board_pdiags
-        board_ndiags = utils.board_ndiags
-        board_diags = utils.board_diags
+        board_pdiags = utils.board_positive_diagonals
+        board_ndiags = utils.board_negative_diagonals
+        board_diags = utils.board_diagonals
 
         def _test_diags(board, row_num, col_num, pdiags, ndiags):
             self.assertEqual(pdiags, list(board_pdiags(board, row_num, col_num)))

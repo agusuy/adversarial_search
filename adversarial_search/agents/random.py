@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from ..core import Agent
 
+
 class RandomAgent(Agent):
     """ An agent that moves randomly.
     """

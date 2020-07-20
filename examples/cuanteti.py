@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-from ..core import Game
-from ..utils import coord_id, board_lines, print_board, game_result, cached_property, cached_indexed_property
+from adversarial_search.core import Game
+from adversarial_search.utils import coord_id, board_lines, print_board, game_result, cached_property, \
+    cached_indexed_property
+
 
 class Cuanteti(Game):
     """ Game component for TicTacToe.
@@ -25,15 +27,15 @@ class Cuanteti(Game):
 
     def results(self):
         if not self.moves():
-            result_Xs = sum(len(ln) - 2 if ln == 'X' * len(ln) else 1
-                for ln in board_lines(self.board, 4, 4)
-                if len(ln) > 2 and (ln == 'X' * len(ln) or 'XXX' in ln))
-            result_Os = sum(len(ln) - 2 if ln == 'O' * len(ln) else 1
-                for ln in board_lines(self.board, 4, 4)
-                if len(ln) > 2 and (ln == 'O' * len(ln) or 'OOO' in ln))
-            #print (list(board_lines(self.board, 4, 4)))
-            #print (result_Xs, result_Os)
-            return game_result('Xs', self.players, result_Xs - result_Os)
+            result_xs = sum(len(ln) - 2 if ln == 'X' * len(ln) else 1
+                            for ln in board_lines(self.board, 4, 4)
+                            if len(ln) > 2 and (ln == 'X' * len(ln) or 'XXX' in ln))
+            result_os = sum(len(ln) - 2 if ln == 'O' * len(ln) else 1
+                            for ln in board_lines(self.board, 4, 4)
+                            if len(ln) > 2 and (ln == 'O' * len(ln) or 'OOO' in ln))
+            # print (list(board_lines(self.board, 4, 4)))
+            # print (result_xs, result_os)
+            return game_result('Xs', self.players, result_xs - result_os)
         else:
             return None
 
@@ -50,14 +52,19 @@ class Cuanteti(Game):
     def __repr__(self):
         return '%s[%s]' % (self.players[self.enabled][0], self.board)
 
+
 # Quick test #######################################################################################
 
 def run_test_game(agent1=None, agent2=None):
     if not agent1:
-        from ..agents.mcts import MCTSAgent
-        agent1 = MCTSAgent('Computer', simulationCount=10)
+        from adversarial_search.agents.mcts import MCTSAgent
+        agent1 = MCTSAgent('Computer', simulation_count=10)
     if not agent2:
-        from ..agents.files import FileAgent
+        from adversarial_search.agents.files import FileAgent
         agent2 = FileAgent(name='Human')
-    from ..core import run_match
+    from adversarial_search.core import run_match
     run_match(Cuanteti(), agent1, agent2)
+
+
+if __name__ == '__main__':
+    run_test_game()
