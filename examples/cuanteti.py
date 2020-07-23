@@ -5,7 +5,7 @@ from adversarial_search.utils import coord_id, board_lines, print_board, game_re
 
 
 class Cuanteti(Game):
-    """ Game component for TicTacToe.
+    """ Game component for Cuanteti.
     """
     PLAYERS = ('Xs', 'Os')
 

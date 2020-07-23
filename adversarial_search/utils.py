@@ -4,8 +4,8 @@ __COLUMNS__ = 'abcdefghijklmnopqrstuvwxyz'
 
 
 def coord_id(column, row):
-    """ Returns the given coordinate in "spreadsheet format". E.g. `coord(1,1) = 'a1'` and
-        `coord(3,7) = 'c7'`.
+    """ Returns the given coordinate in "spreadsheet format".
+    E.g. `coord_id(0,0) -> 'a1'` and `coord_id(2,6) -> 'c7'`.
     """
     return '%s%d' % (__COLUMNS__[column], row + 1)
 
@@ -58,7 +58,7 @@ def board_diagonals(board, rows, cols):
         yield x
 
 
-def board_orthogonal(board, rows, cols):
+def board_orthogonals(board, rows, cols):
     """ Returns a list of rows and columns of the given board.
     """
     for x in board_rows(board, rows, cols):
@@ -70,7 +70,7 @@ def board_orthogonal(board, rows, cols):
 def board_lines(board, rows, cols):
     """ Returns a list of lines of the given board. Lines can be horizontal, vertical or diagonal.
     """
-    for x in board_orthogonal(board, rows, cols):
+    for x in board_orthogonals(board, rows, cols):
         yield x
     for x in board_diagonals(board, rows, cols):
         yield x
