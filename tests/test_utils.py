@@ -79,8 +79,30 @@ class TestUtils(unittest.TestCase):
         _test_diagonals('ABCDEFGHI', 3, 3, ['A', 'BD', 'CEG', 'FH', 'I'], ['G', 'DH', 'AEI', 'BF', 'C'])
         _test_diagonals('ABCDEF', 3, 2, ['A', 'BC', 'DE', 'F'], ['E', 'CF', 'AD', 'B'])
         _test_diagonals('ABCDEF', 2, 3, ['A', 'BD', 'CE', 'F'], ['D', 'AE', 'BF', 'C'])
-        _test_diagonals('ABCDEF', 6, 1, ['A', 'B', 'C', 'D', 'E', 'F'], ['F', 'E', 'D', 'C', 'B', 'A'])
         _test_diagonals('ABCDEF', 1, 6, ['A', 'B', 'C', 'D', 'E', 'F'], ['A', 'B', 'C', 'D', 'E', 'F'])
+        _test_diagonals('ABCDEF', 6, 1, ['A', 'B', 'C', 'D', 'E', 'F'], ['F', 'E', 'D', 'C', 'B', 'A'])
+
+    def test_board_lines(self):
+        """Test utils.board_lines(board, rows, cols)
+        """
+
+        board_lines = a_s.utils.board_lines
+
+        self.assertEqual(['A', 'A', 'A', 'A'], list(board_lines('A', 1, 1)))
+        self.assertEqual(['AB', 'CD', 'AC', 'BD', 'A', 'BC', 'D', 'C', 'AD', 'B'], list(board_lines('ABCD', 2, 2)))
+        self.assertEqual(
+            ['ABC', 'DEF', 'GHI', 'ADG', 'BEH', 'CFI', 'A', 'BD', 'CEG', 'FH', 'I', 'G', 'DH', 'AEI', 'BF', 'C'],
+            list(board_lines('ABCDEFGHI', 3, 3)))
+        self.assertEqual(['AB', 'CD', 'EF', 'ACE', 'BDF', 'A', 'BC', 'DE', 'F', 'E', 'CF', 'AD', 'B'],
+                         list(board_lines('ABCDEF', 3, 2)))
+        self.assertEqual(['ABC', 'DEF', 'AD', 'BE', 'CF', 'A', 'BD', 'CE', 'F', 'D', 'AE', 'BF', 'C'],
+                         list(board_lines('ABCDEF', 2, 3)))
+        self.assertEqual(
+            ['ABCDEF', 'A', 'B', 'C', 'D', 'E', 'F', 'A', 'B', 'C', 'D', 'E', 'F', 'A', 'B', 'C', 'D', 'E', 'F'],
+            list(board_lines('ABCDEF', 1, 6)))
+        self.assertEqual(
+            ['A', 'B', 'C', 'D', 'E', 'F', 'ABCDEF', 'A', 'B', 'C', 'D', 'E', 'F', 'F', 'E', 'D', 'C', 'B', 'A'],
+            list(board_lines('ABCDEF', 6, 1)))
 
 
 if __name__ == "__main__":
