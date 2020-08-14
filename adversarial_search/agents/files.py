@@ -2,6 +2,7 @@
 import sys
 from ..core import Agent
 
+
 class FileAgent(Agent):
     """ An agent that takes his moves from a file and keeps record of the match in another one. It
         is also used like a user interface using standard input and output.

@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
-from ..core import Game
-from ..utils import coord_id, print_board, game_result
+from adversarial_search.core import Game
+from adversarial_search.utils import coord_id, print_board, game_result
 
-class Toads_Frogs(Game):
+
+class ToadsFrogs(Game):
     """ Game component for Toads and Frogs
     """
 
     PLAYERS = ('Toads', 'Frogs')
 
     def __init__(self, board=None, enabled=0, chips_per_player=3, empty_spaces=2):
-        Game.__init__(self, *Toads_Frogs.PLAYERS)
+        Game.__init__(self, *ToadsFrogs.PLAYERS)
         if board:
             self.board = board
         else:
@@ -24,10 +25,10 @@ class Toads_Frogs(Game):
             return coord_id(0, self)
 
     def moves(self):
-        if not self.enabled:  # Toads move
+        if not self.enabled:  # Toads turn
             moves = [self._Move(pos) for pos in range(len(self.board)) if
                      self.board[pos:].startswith('T_') or self.board[pos:].startswith('TF_')]
-        else:  # Frogs move
+        else:  # Frogs turn
             moves = [self._Move(pos) for pos in range(len(self.board)) if
                      self.board[:pos + 1].endswith('_F') or self.board[:pos + 1].endswith('_TF')]
         return moves
@@ -35,9 +36,9 @@ class Toads_Frogs(Game):
     def results(self):
         # There is no draw in this game
         enabled_player = self.players[self.enabled]
-        if not self.enabled:
+        if not self.enabled:  # Toads turn
             moves = 'T_' in self.board or 'TF_' in self.board
-        else:
+        else:  # Frogs turn
             moves = '_F' in self.board or '_TF' in self.board
         if not moves:
             return game_result(enabled_player, self.players, -1)
@@ -52,7 +53,7 @@ class Toads_Frogs(Game):
         else:  # A frog moves
             position = move - 1 if board_list[move - 1] == '_' else move - 2
         board_list[position] = enabled_player[0]
-        return Toads_Frogs(''.join(board_list), (self.enabled + 1) % 2)
+        return ToadsFrogs(''.join(board_list), (self.enabled + 1) % 2)
 
     def __str__(self):
         return print_board(self.board, 1, len(self.board) + 1)
@@ -60,14 +61,19 @@ class Toads_Frogs(Game):
     def __repr__(self):
         return '%s[%s]' % (self.players[self.enabled][0], self.board)
 
+
 # Quick test #######################################################################################
 
 def run_test_game(agent1=None, agent2=None):
     if not agent1:
-        from ..agents.random import RandomAgent
+        from adversarial_search.agents.random import RandomAgent
         agent1 = RandomAgent(name='Computer')
     if not agent2:
-        from ..agents.files import FileAgent
+        from adversarial_search.agents.files import FileAgent
         agent2 = FileAgent(name='Human')
-    from ..core import run_match
-    run_match(Toads_Frogs(None, 0, 5, 4), agent1, agent2)
+    from adversarial_search.core import run_match
+    run_match(ToadsFrogs(None, 0, 5, 4), agent1, agent2)
+
+
+if __name__ == '__main__':
+    run_test_game()

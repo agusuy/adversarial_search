@@ -1,19 +1,21 @@
-# -*- coding: utf-8 -*-
-import unittest
 import random
-from context import adversarial_search
-Game = adversarial_search.core.Game
-utils = adversarial_search.utils
+import unittest
+
+from .context import adversarial_search as a_s
+
+Game = a_s.core.Game
+utils = a_s.utils
+
 
 class GameTest(unittest.TestCase):
-    """ Base class for game testcases.
+    """ Base class for game test cases.
     """
 
-    def basic_test(self, Game, **checks):
-        """ Simulates many games randomnly checking basic behaviour of the game component. Checks
+    def basic_test(self, game_class, **checks):
+        """ Simulates many games randomly checking basic behaviour of the game component. Checks
             flags activate some asserts. Options are:
-		  
-		  + zero_sum: checks if results sum zero.
+
+            + zero_sum: checks if results sum zero.
         """
         # TODO - player_turns: maximum number of consecutive turns a player may have.
         # TODO - alternated: checks players alternate in turns.  
@@ -21,7 +23,7 @@ class GameTest(unittest.TestCase):
         rnd = random.Random(123456)
 
         for _ in range(100):
-            game = Game()
+            game = game_class()
             for _ in range(100):
                 moves = game.moves()
                 results = game.results()
@@ -42,7 +44,7 @@ class GameTest(unittest.TestCase):
             results are given, it checks if the game finishes and if the results are the same. The
             trace must be a list of two or three items sequences. Two items represent player and
             move, while three items represent state, player and move. If the state is included, its
-            checked to be equal to the game objetc's representation. 
+            checked to be equal to the game object representation.
         """
         for ply in trace:
             if len(ply) > 2:
@@ -54,12 +56,12 @@ class GameTest(unittest.TestCase):
             self.assertTrue(moves, 'Player %s has no moves: %r %r' % (player, game, moves))
             self.assertIsNotNone(moves)
             self.assertTrue(str(move) in map(str, moves), 'Move %s is not valid: %r %r' % (move, game, moves))
-            if not move in moves:  # Seek actual move.
+            if move not in moves:  # Seek actual move.
                 move = [m for m in moves if str(m) == move][0]
             self.assertIsNone(game.results())
-            game1 = game.next(move)
-            self.assertNotEqual(game, game1)
-            game = game1
+            next_game = game.next(move)
+            self.assertNotEqual(game, next_game)
+            game = next_game
         if not results:
             self.assertIsNone(game.results())
         else:
@@ -72,10 +74,11 @@ class GameTest(unittest.TestCase):
         trace = trace.strip()
         return self.trace_test(game, *[tuple(ln.split()) for ln in trace.splitlines()], **results)
 
-class Silly(Game): #################################################################################
+
+class Silly(Game):
     """ Certainly a silly game, for testing purposes only. Players A and B play, with A starting the
-        game. Each turn, the active player gets to decide if he wins (+), he loses (-), its a tie 
-	   (=), or he continues playing or he enables the other player.
+        game. Each turn, the active player gets to decide if he wins (+), he loses (-), its a tie
+        (=), or he continues playing or he enables the other player.
     """
     RESULTS = {'+': 1, '=': 0, '-': -1, 'A': None, 'B': None}
     PLAYERS = tuple([j for j, r in RESULTS.items() if r is None])
@@ -110,7 +113,8 @@ class Silly(Game): #############################################################
     def __repr__(self):
         return self.state
 
-class TestGame_Silly(GameTest):
+
+class TestGameSilly(GameTest):
     """ Testing reference game Silly.
     """
 
@@ -136,14 +140,19 @@ class TestGame_Silly(GameTest):
         self.trace_test(Silly(), 'AAB', 'BBA')
         self.trace_test(Silly(), 'AAB', 'BBB')
 
+    def test_text(self):
         self.trace_test_text(Silly(), 'A B\nB A\n' * 5)
         self.trace_test_text(Silly(), 'A A\n' * 10)
         self.trace_test_text(Silly(), 'A B\n' + 'B B\n' * 5)
 
-TicTacToe = adversarial_search.games.tictactoe.TicTacToe
 
-class Test_TicTacToe(GameTest): ####################################################################
-    """ TicTacToe testcases.
+# TODO: Move to examples folder
+'''
+TicTacToe = a_s.games.tictactoe.TicTacToe
+
+
+class TestTicTacToe(GameTest):
+    """ TicTacToe test cases.
     """
 
     def test_basic(self):
@@ -166,10 +175,12 @@ class Test_TicTacToe(GameTest): ################################################
             O[OXX.O..X.] Os c3
             """, Xs=-1, Os=1)
 
-Toads_Frogs = adversarial_search.games.toads_and_frogs.Toads_Frogs
 
-class Test_Toads_Frogs(GameTest): ##################################################################
-    """ Toads and Frogs testcases
+Toads_Frogs = a_s.games.toads_and_frogs.ToadsFrogs
+
+
+class TestToadsFrogs(GameTest):
+    """ Toads and Frogs test cases
     """
 
     def test_basic(self):
@@ -193,14 +204,17 @@ class Test_Toads_Frogs(GameTest): ##############################################
             T[TFFT_] Toads a4
             """, Toads=1, Frogs=-1)
 
-Cuanteti = adversarial_search.games.cuanteti.Cuanteti
 
-class Test_Cuanteti(GameTest): ####################################################################
-    """ Cuanteti testcases.
+Cuanteti = a_s.games.cuanteti.cuanteti
+
+
+class TestCuanteti(GameTest):
+    """ Cuanteti test cases.
     """
 
     def test_basic(self):
         self.basic_test(Cuanteti, zero_sum=True, enabled_players=1)
+'''
 
-if __name__ == "__main__": #########################################################################
+if __name__ == "__main__":
     unittest.main()

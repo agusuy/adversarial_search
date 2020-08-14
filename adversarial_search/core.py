@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 import random
 
-class Game(object): ################################################################################
+
+class Game(object):
     """ Base class for all game components. The instance represents a game state, including 
         information about the board, the pieces, the players and any other data required to continue
-	   the game. 
+        the game.
     """
 
     def __init__(self, *players):
@@ -29,8 +30,8 @@ class Game(object): ############################################################
 
     def results(self):
         """ Returns the results of a finished game for every player. This will be a dict of the form
-            `{player:float}`. Draws are always 0, with victory results being always positive and 
-		  defeat always negative. Must return an empty dict if the game is not finished.
+            `{player:float}`. Draws are always 0, with victory results being always positive and
+            defeat always negative. Must return an empty dict if the game is not finished.
         """
         raise NotImplementedError('Class %s has not implemented method results.' % self.__class__.__name__)
 
@@ -44,7 +45,8 @@ class Game(object): ############################################################
     def __hash__(self):
         return hash(repr(self))
 
-class Agent(object): ###############################################################################
+
+class Agent(object):
     """ Base class for agents participating in games.
     """
 
@@ -63,7 +65,7 @@ class Agent(object): ###########################################################
 
     def _decision(self, moves):
         """ Method called by Agent.decision() to actually make the choice of move. This should be 
-            overriden by subclasses.
+            overridden by subclasses.
         """
         return moves[0]  # Please do not use this default implementation.
 
@@ -89,23 +91,22 @@ class Agent(object): ###########################################################
 
     def __hash__(self):
         return self.name.__hash__()
-    
+
     def randgen(self, x):
         """ If x is `None` or `int` or `long`, returns random.Random(x), else returns x.
         """
-        return random.Random(x) if x is None or type(x) == int else x 
+        return random.Random(x) if x is None or type(x) == int else x
 
-# Match ############################################################################################
 
-def match(game, *agents_list, **agents): 
+def match(game, *agents_list, **agents):
     """ A match controller in the form of a generator. Participating agents can be specified either
         as a list (agents_list) or pairs player=agent. If the list is used, agents are assigned in
         the same order as the game players.
 
-        The generator returns tuples. First `(0, agents, initial game state)`. After that 
-	   `(move_number, move, game state)` for each move. Finally `(None, results, 
-	   final game state)`. The generator handles the match, asking the enabled agents to move,
-        keeping track of game states and notifying all agents as needed.
+        The generator returns tuples. First `(0, agents, initial game state)`. After that
+        `(move_number, move, game state)` for each move. Finally `(None, results, final game state)`.
+        The generator handles the match, asking the enabled agents to move, keeping track of game states
+        and notifying all agents as needed.
     """
     for player, agent in zip(game.players, agents_list):
         agents[player] = agent

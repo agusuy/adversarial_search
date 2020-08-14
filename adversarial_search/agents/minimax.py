@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from ..core import Agent
 
+
 class MiniMaxAgent(Agent):
     """ An agent implementing simple heuristic MiniMax.
     """

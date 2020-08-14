@@ -2,12 +2,13 @@
 
 The following tutorial explains the use of the Adversarial Search framework. As an example we will explain how to implement the game _"Toads and Frogs"_.
 
-The game consists in a strip of n positions where an x amount of toads and frogs pieces can be place, and an y amount of empty spaces following the relation n = 2*x + y. Usually all the toads to the left and all frogs to the right, and leaving the empty places in the middle. The toads will move only to the right and frogs only to the left. A piece can only move to an adjacent position only if it is empty, but if there is piece of the other player, the piece can jump to the following position if it is empty. If non of those conditions apply, the piece has no possible movements. The game ends when a player has no possible movements to do.
+The game consists in a strip of n positions where an x amount of toads and frogs pieces can be place, and an y amount of empty spaces following the relation n = 2*x + y. Usually all the toads to the left and all frogs to the right, and leaving the empty places in the middle. The toads will move only to the right and frogs only to the left. A piece can only move to an adjacent position only if it is empty, but if there is a piece from the other player, the piece can jump to the following position if it is empty. If non of those conditions apply, the piece has no possible movements. The game ends when a player has no possible movements to do.
 
 Imagine that we have the following initial board: TT_FF, where the movements will be numbered from 0 to 4 from left to right. A possible game could be:
 
 | Player | Movement |        Result        |
 |:------:|:--------:|:--------------------:|
+|    _   |     _    |         TT_FF        |
 |  Toads |     1    |         T_TFF        |
 |  Frogs |     3    |         TFT_F        |
 |  Toads |     2    |         TF_TF        |
@@ -15,7 +16,7 @@ Imagine that we have the following initial board: TT_FF, where the movements wil
 |  Toads |     3    |         TFF_T        |
 |  Frogs |     _    | Frogs loose the game |
 
-In the framework directory we have the main modules **_core_** and **utils**, and the folders **agents** and **games**.
+In the framework directory we have the main modules **_core_** and **utils**, and the folder **agents**.
 
 ## **core**
 
@@ -23,17 +24,18 @@ This module contains all the classes and functions required to implement and exe
 
 ### **Game**
 
-The class **Game** is the superclass for all games. To implement our game "Toads and Frogs" we have to implement a subclass of **Game**, where will we define the game players and its constructor in the following way:
+The class **Game** is the superclass for all games. To implement our game "Toads and Frogs" we have to implement a subclass of **Game**. Here we will define the game players and its constructor in the following way:
 
 ```python
-class Toads_Frogs(Game):
+from adversarial_search.core import Game
+class ToadsFrogs(Game):
     """ Game component for Toads and Frogs
     """
 
     PLAYERS = ('Toads', 'Frogs')
 
     def __init__(self, board=None, enabled=0, chips_per_player=3, empty_spaces=2):
-        Game.__init__(self, *Toads_Frogs.PLAYERS)
+        Game.__init__(self, *ToadsFrogs.PLAYERS)
         if board:
             self.board = board
         else:
@@ -45,38 +47,38 @@ The constructor will initialize the players and the board. The board can be give
 
 To define a game we need to implement the following methods from the class **Games**: **moves**, **result**, and **next**.
 
-The method **moves** calculates all the possible moves for each of the players. It returns a dictionary with elements in the form of **player**: **movements**, where movements is a list with the possible movements for the player in the current game state. The players that are not active (the ones that don't play this turn) should have an empty list, or not appear in the list. If the game has ended, the result must ne **None**. 
+The method **moves** calculates all the possible moves for each of the players. It returns a dictionary with elements in the form of **player**: **movements**, where movements is a list with the possible movements for the player in the current game state. The players that are not active (the ones that don't play this turn) should have an empty list, or not appear in the list. If the game has ended, the result must be **None**. 
 
-In out implementation of "Toads and Frogs", depending on the active player we will search the indexes of the positions where there is a piece with a possible move and will add it to a list. Note that in order to represent a movement an int is not used directly but instead an object of the class **_Move** is used, that is a subclass of **int**, that will serve as a better and clearer representation as an **str** (overriding the **\_\_str\_\_** method). If there are no movements the player will be finish and **None** will be return. Otherwise a dictionary with an only element corresponding to the active player and its list of movements will be return.
+In our implementation of "Toads and Frogs", depending on the active player we will search the indexes of the positions where there is a piece with a possible move and will add it to a list. Note that in order to represent a movement an int is not used directly but instead an object of the class **_Move** is used, that is a subclass of **int**, that will serve as a better and clearer representation as an **str** (overriding the **\_\_str\_\_** method). If there are no movements the player will be finish and **None** will be return. Otherwise a dictionary with an only element corresponding to the active player and its list of movements will be return.
 
 ```python
 class _Move(int):
     def __str__(self):
         return coord_id(0, self)
 
-    def moves(self):
-        if not self.enabled:  # Toads move
-            moves = [self._Move(pos) for pos in range(len(self.board)) if
-                     self.board[pos:].startswith('T_') or self.board[pos:].startswith('TF_')]
-        else:  # Frogs move
-            moves = [self._Move(pos) for pos in range(len(self.board)) if
-                     self.board[:pos + 1].endswith('_F') or self.board[:pos + 1].endswith('_TF')]
-        return moves
+def moves(self):
+    if not self.enabled:  # Toads turn
+        moves = [self._Move(pos) for pos in range(len(self.board)) if
+                 self.board[pos:].startswith('T_') or self.board[pos:].startswith('TF_')]
+    else:  # Frogs turn
+        moves = [self._Move(pos) for pos in range(len(self.board)) if
+                 self.board[:pos + 1].endswith('_F') or self.board[:pos + 1].endswith('_TF')]
+    return moves
 ```
 
-The **result** method looks at the game sate and determines if the game has finish or not. If it has not finish the method returns **None** or an empty dictionary, otherwise it will return the result of the game for each of the players. The result will consist on a dictionary in the form **{player: result}**, where result will be 0 if it ends in draw, a positive number if the player has won or negative if it lost. Different positive or negative values cloud represent different levels of victory or defeat, in case we would like to show how good was the victory or how bad was the defeat.
+The **results** method looks at the game sate and determines if the game has finish or not. If it has not finish the method returns **None** or an empty dictionary, otherwise it will return the result of the game for each of the players. The result will consist on a dictionary in the form **{player: result}**, where result will be 0 if it ends in draw, a positive number if the player has won or negative if it lost. Different positive or negative values cloud represent different levels of victory or defeat, in case we would like to show how good was the victory or how bad was the defeat.
 
-For "Toads and Frogs" we have to analyze the active player movements. If ths has no more movements the game will end with a defeat for him, if not the game will continue. Because of the characteristics of the game there is no draw result. Depending on the active player we will identify if it has a movement or not. If it has movements we will return **None**, if not we will call the the function **game_result** from the **utils** module. This method get as a parameter a player, a list of players, and result associated to the player. From this result value, a result value for the rest of the players will be calculated and a dictionary with the form **{player: result}** is returned. The result for the player that it gets as a parameter can be modified in a way that the sum of all the result will be 0.
+For "Toads and Frogs" we have to analyze the active player movements. If it has no more movements the game will end with a defeat for him, if not the game will continue. Because of the characteristics of the game there is no draw result. Depending on the active player we will identify if it has a movement or not. If it has movements we will return **None**, if not we will call the function **game_result** from the **utils** module. This method get as a parameter a player, a list of players, and result associated to the player. From this result value, a result value for the rest of the players will be calculated and a dictionary with the form **{player: result}** is returned. The result for the player that it gets as a parameter can be modified in a way that the sum of all the result will be 0.
 
 ```python
 def results(self):
     # There is no draw in this game
     enabled_player = self.players[self.enabled]
-    if not self.enabled:
+    if not self.enabled: # Toads turn
         moves = 'T_' in self.board or 'TF_' in self.board
     else:
         moves = '_F' in self.board or '_TF' in self.board
-    if not moves:
+    if not moves: # Frogs turn
         return game_result(enabled_player, self.players, -1)
     return None
 ```
@@ -95,7 +97,7 @@ def next(self, move):
     else:  # A frog moves
         position = move - 1 if board_list[move - 1] == '_' else move - 2
     board_list[position] = enabled_player[0]
-    return Toads_Frogs(''.join(board_list), (self.enabled + 1) % 2)
+    return ToadsFrogs(''.join(board_list), (self.enabled + 1) % 2)
 ```
 
 It is also convenient to implement the methods **\_\_str\_\_** and **\_\_repr\_\_** that will give a string representations of the game.
@@ -111,14 +113,14 @@ def __repr__(self):
 ### **match** and **run_match**
  Going back to the **core** module, we also have 2 functions: **match** and **run_match**.
  
- * **match** - this is the function that allow us to create a match, and obtain the intermediate results while it is happening. The function can get a list of agents hat will play or a dictionary in the form **{player: agent}**. It is implemented as a generator, that will yield the tuples with the match information. Initially it will return a tuple **(0, agents, initial state of the game)**. Then for every movement it returns a tuple **(movement number, movements, game state)**. When the game is over it returns the tuple **(None, results, final state of the game)**. The generator will handle every aspect of the game, asking the agents for the next movement, calculate the intermediate states of the game and notifying the agents about what is happening in the game.
+ * **match** - this is the function that allow us to create a match, and obtain the intermediate results while it is happening. The function can get a list of agents that will play or a dictionary in the form **{player: agent}**. It is implemented as a generator, that will yield the tuples with the match information. Initially it will return a tuple **(0, agents, initial state of the game)**. Then for every movement it returns a tuple **(movement number, movements, game state)**. When the game is over it returns the tuple **(None, results, final state of the game)**. The generator will handle every aspect of the game, asking the agents for the next movement, calculate the intermediate states of the game and notifying the agents about what is happening in the game.
 
 We can use the following code that will call the **match** method and it iterates over the intermediate results that are generated:
 
 ```python
 agent1 = RandomAgent(name='Player 1')
 agent2 = RandomAgent(name='Player 2')
-game = Toads_Frogs(None, 0, 5, 4)
+game = ToadsFrogs(None, 0, 5, 4)
 for move_number, moves, game_state in match(game, agent1, agent2):
     if move_number is not None:
         print('%d: %s -> %r' % (move_number, moves, game_state))
@@ -133,7 +135,7 @@ for move_number, moves, game_state in match(game, agent1, agent2):
  ```python
 agent1 = RandomAgent(name='Player 1')
 agent2 = RandomAgent(name='Player 2')
-game = Toads_Frogs(None, 0, 5, 4)
+game = ToadsFrogs(None, 0, 5, 4)
 results, final_state = run_match(game, agent1, agent2)
 print('Result: %s' % results)
 print('Final board: %r' % final_state)

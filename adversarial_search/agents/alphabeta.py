@@ -3,6 +3,7 @@ from .minimax import MiniMaxAgent
 
 INFINITE = 0x7FFFFFFF
 
+
 class AlphaBetaAgent(MiniMaxAgent):
     """ An agent implementing MiniMax with alpha-beta pruning.
         <http://en.wikipedia.org/wiki/Alpha-beta_pruning>

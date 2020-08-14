@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-from ..core import Game
-from ..utils import coord_id, board_lines, print_board, game_result, cached_property, cached_indexed_property
+from adversarial_search.core import Game
+from adversarial_search.utils import coord_id, board_lines, print_board, game_result, cached_property, \
+    cached_indexed_property
+
 
 class TicTacToe(Game):
     """ Game component for TicTacToe.
@@ -27,11 +29,10 @@ class TicTacToe(Game):
 
     def results(self):
         lines = [ln for ln in board_lines(self.board, 3, 3) if len(ln) == 3]
-        result_Xs = len([ln for ln in lines if ln == 'XXX']) - len([ln for ln in lines if ln == 'OOO'])
-        if not result_Xs and [ln for ln in lines if '.' in ln]:
-            # Sin l�neas y con casillas a�n vac�as.
-            result_Xs = None
-        return game_result('Xs', self.players, result_Xs)
+        result_xs = len([ln for ln in lines if ln == 'XXX']) - len([ln for ln in lines if ln == 'OOO'])
+        if not result_xs and [ln for ln in lines if '.' in ln]:
+            result_xs = None
+        return game_result('Xs', self.players, result_xs)
 
     @cached_indexed_property('__next__')
     def next(self, move):
@@ -53,14 +54,19 @@ class TicTacToe(Game):
         board_value = sum([square_value[s] * p for s, p in zip(game.board, square_factors)])
         return board_value if agent.player == 'Xs' else -board_value
 
+
 # Quick test #######################################################################################
 
 def run_test_game(agent1=None, agent2=None):
     if not agent1:
-        from ..agents.minimax import MiniMaxAgent
+        from adversarial_search.agents.minimax import MiniMaxAgent
         agent1 = MiniMaxAgent('Computer', 3, heuristic=TicTacToe.simple_heuristic)
     if not agent2:
-        from ..agents.files import FileAgent
+        from adversarial_search.agents.files import FileAgent
         agent2 = FileAgent(name='Human')
-    from ..core import run_match
+    from adversarial_search.core import run_match
     run_match(TicTacToe(), agent1, agent2)
+
+
+if __name__ == '__main__':
+    run_test_game()
