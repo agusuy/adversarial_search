@@ -1,5 +1,6 @@
 import random
-import unittest
+
+import pytest
 
 from .context import adversarial_search as a_s
 
@@ -7,11 +8,12 @@ Game = a_s.core.Game
 utils = a_s.utils
 
 
-class GameTest(unittest.TestCase):
+class GameTest:
     """ Base class for game test cases.
     """
 
-    def basic_test(self, game_class, **checks):
+    @staticmethod
+    def basic_test(game_class, **checks):
         """ Simulates many games randomly checking basic behaviour of the game component. Checks
             flags activate some asserts. Options are:
 
@@ -29,17 +31,20 @@ class GameTest(unittest.TestCase):
                 results = game.results()
                 if results is None:
                     # If no results, then there must be moves.
-                    self.assertTrue(moves, "No results and no moves: %s" % game)
+                    assert moves, "No results and no moves: %s" % game
                     # None is not a valid move.
-                    self.assertFalse([m for m in moves if m is None], "None move: %r %r" % (game, moves))
+                    assert not [m for m in moves if m is None], "None move: %r %r" % (game, moves)
                     game = game.next(rnd.choice(moves))
                 else:
-                    self.assertFalse(moves, "Results and moves: %r %r %r" % (game, results, moves))
+                    assert not moves, "Results and moves: %r %r %r" % (game, results, moves)
                     # Zero sum results check.
-                    zero_sum and self.assertEqual(sum(results.values()), 0, "Nonzero sum: %r %r" % (game, results))
+                    assert zero_sum
+                    assert sum(results.values()) == 0, "Nonzero sum: %r %r" % (game, results)
+
                     break
 
-    def trace_test(self, game, *trace, **results):
+    @staticmethod
+    def trace_test(game, *trace, **results):
         """ Simulates a match with a trace of moves, verifying game's behaviour at each step. If
             results are given, it checks if the game finishes and if the results are the same. The
             trace must be a list of two or three items sequences. Two items represent player and
@@ -49,23 +54,23 @@ class GameTest(unittest.TestCase):
         for ply in trace:
             if len(ply) > 2:
                 game_repr, player, move = ply
-                self.assertEqual('%r' % game, game_repr)
+                assert '%r' % game == game_repr
             else:
                 player, move = ply
             moves = game.moves()
-            self.assertTrue(moves, 'Player %s has no moves: %r %r' % (player, game, moves))
-            self.assertIsNotNone(moves)
-            self.assertTrue(str(move) in map(str, moves), 'Move %s is not valid: %r %r' % (move, game, moves))
+            assert moves, 'Player %s has no moves: %r %r' % (player, game, moves)
+            assert moves is not None
+            assert str(move) in map(str, moves), 'Move %s is not valid: %r %r' % (move, game, moves)
             if move not in moves:  # Seek actual move.
                 move = [m for m in moves if str(m) == move][0]
-            self.assertIsNone(game.results())
+            assert game.results() is None
             next_game = game.next(move)
-            self.assertNotEqual(game, next_game)
+            assert game != next_game
             game = next_game
         if not results:
-            self.assertIsNone(game.results())
+            assert game.results() is None
         else:
-            self.assertDictEqual(results, game.results())
+            assert results == game.results()
 
     def trace_test_text(self, game, trace, **results):
         """ Allows to write a full trace in text, to use with `GameTest.trace_test`. Each ply in the
@@ -121,29 +126,33 @@ class TestGameSilly(GameTest):
     def test_basic(self):
         self.basic_test(Silly, zero_sum=True, enabled_players=1)
 
-    def test_traces(self):
-        self.trace_test(Silly(), 'AA+', A=1, B=-1)
-        self.trace_test(Silly(), 'AA=', A=0, B=0)
-        self.trace_test(Silly(), 'AA-', A=-1, B=1)
-        self.trace_test(Silly(), 'AAA')
-        self.trace_test(Silly(), 'AAB')
+    @pytest.mark.parametrize("game, trace, results",
+                             [(Silly(), ('AA+',), {'A': 1, 'B': -1}),
+                              (Silly(), ('AA=',), {'A': 0, 'B': 0}),
+                              (Silly(), ('AA-',), {'A': -1, 'B': 1}),
+                              (Silly(), ('AAA',), {}),
+                              (Silly(), ('AAB',), {}),
+                              (Silly(), ('AAA', 'AA+'), {'A': 1, 'B': -1}),
+                              (Silly(), ('AAA', 'AA='), {'A': 0, 'B': 0}),
+                              (Silly(), ('AAA', 'AA-'), {'A': -1, 'B': 1}),
+                              (Silly(), ('AAA', 'AAA'), {}),
+                              (Silly(), ('AAA', 'AAB'), {}),
+                              (Silly(), ('AAB', 'BB+'), {'A': -1, 'B': 1}),
+                              (Silly(), ('AAB', 'BB='), {'A': 0, 'B': 0}),
+                              (Silly(), ('AAB', 'BB-'), {'A': 1, 'B': -1}),
+                              (Silly(), ('AAB', 'BBA'), {}),
+                              (Silly(), ('AAB', 'BBB'), {}),
+                              ])
+    def test_traces(self, game, trace, results):
+        self.trace_test(Silly(), *trace, **results)
 
-        self.trace_test(Silly(), 'AAA', 'AA+', A=1, B=-1)
-        self.trace_test(Silly(), 'AAA', 'AA=', A=0, B=0)
-        self.trace_test(Silly(), 'AAA', 'AA-', A=-1, B=1)
-        self.trace_test(Silly(), 'AAA', 'AAA')
-        self.trace_test(Silly(), 'AAA', 'AAB')
-
-        self.trace_test(Silly(), 'AAB', 'BB+', A=-1, B=1)
-        self.trace_test(Silly(), 'AAB', 'BB=', A=0, B=0)
-        self.trace_test(Silly(), 'AAB', 'BB-', A=1, B=-1)
-        self.trace_test(Silly(), 'AAB', 'BBA')
-        self.trace_test(Silly(), 'AAB', 'BBB')
-
-    def test_text(self):
-        self.trace_test_text(Silly(), 'A B\nB A\n' * 5)
-        self.trace_test_text(Silly(), 'A A\n' * 10)
-        self.trace_test_text(Silly(), 'A B\n' + 'B B\n' * 5)
+    @pytest.mark.parametrize("game, trace, results",
+                             [(Silly(), 'A B\nB A\n' * 5, {}),
+                              (Silly(), 'A A\n' * 10, {}),
+                              (Silly(), 'A B\n' + 'B B\n' * 5, {}),
+                              ])
+    def test_text(self, game, trace, results):
+        self.trace_test_text(game, trace, **results)
 
 
 # TODO: Move to examples folder
@@ -215,6 +224,3 @@ class TestCuanteti(GameTest):
     def test_basic(self):
         self.basic_test(Cuanteti, zero_sum=True, enabled_players=1)
 '''
-
-if __name__ == "__main__":
-    unittest.main()
