@@ -1,8 +1,9 @@
 """ Test cases for module agents.
 """
 import random
-import unittest
 from itertools import combinations
+
+import pytest
 
 from .context import adversarial_search as a_s
 from .test_games import Silly
@@ -12,12 +13,20 @@ MiniMaxAgent = a_s.agents.minimax.MiniMaxAgent
 AlphaBetaAgent = a_s.agents.alphabeta.AlphaBetaAgent
 MCTSAgent = a_s.agents.mcts.MCTSAgent
 
+AGENTS = [
+    RandomAgent,
+    MiniMaxAgent,
+    AlphaBetaAgent,
+    MCTSAgent,
+]
 
-class TestAgents(unittest.TestCase):
+
+class TestAgents:
     """ Basic test cases for agents behaviour.
     """
 
-    def assertBetterAgent(self, agent_worse, agent_best, game, match_count=10):
+    @staticmethod
+    def assert_better_agent(agent_worse, agent_best, game, match_count=10):
         players = game.players
         score_best_agent = 0
         score_worse_agent = 0
@@ -26,28 +35,25 @@ class TestAgents(unittest.TestCase):
             result2, _ = a_s.core.run_match(game, agent_best, agent_worse)
             score_best_agent += result1[players[1]] + result2[players[0]]
             score_worse_agent += result1[players[0]] + result2[players[1]]
-        self.assertGreater(score_best_agent, score_worse_agent)
+        assert score_best_agent > score_worse_agent
 
-    def assertBetterThanRandom(self, agent, game, match_count=10, seed=None):
+    def assert_better_than_random(self, agent, game, match_count=10, seed=None):
         random_agent = RandomAgent(random.Random(seed if seed else agent.name.__hash__()))
-        self.assertBetterAgent(random_agent, agent, game, match_count)
+        self.assert_better_agent(random_agent, agent, game, match_count)
 
-    def testSilly(self):
-        game = Silly()
+    @pytest.mark.parametrize('agent1, agent2', list(combinations(AGENTS, 2)))
+    def test_sanity_agents(self, agent1, agent2):
         # Run matches only to see if agent components fail.
-        agents = [
-            RandomAgent(),
-            MiniMaxAgent(),
-            AlphaBetaAgent(),
-            MCTSAgent(),
-        ]
-        for agents in combinations(agents, 2):
-            a_s.core.run_match(game, *agents)
+        a_s.core.run_match(Silly(), agent1(), agent2())
 
+    @pytest.mark.parametrize('agent', [
+        MiniMaxAgent,
+        AlphaBetaAgent,
+        MCTSAgent,
+    ])
+    def test_agent_against_random(self, agent):
         # Statistically MiniMax based agents should beat random agents even without a proper heuristic.
-        self.assertBetterThanRandom(MiniMaxAgent(), game)
-        self.assertBetterThanRandom(AlphaBetaAgent(), game)
-        self.assertBetterThanRandom(MCTSAgent(), game)
+        self.assert_better_than_random(agent(), Silly())
 
 
 # TODO: Move to examples folder
@@ -71,6 +77,3 @@ class TestAgents(unittest.TestCase):
             self.assertBetterAgent(agent('RandomHeuristic', random=rand),
                                    agent('SimpleHeuristic', heuristic=TicTacToe.simple_heuristic, random=rand), game)
 '''
-
-if __name__ == "__main__":
-    unittest.main()
