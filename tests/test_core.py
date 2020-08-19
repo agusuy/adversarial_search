@@ -1,5 +1,6 @@
 import pytest
 
+import adversarial_search.agents.agent
 from .context import adversarial_search as a_s
 
 
@@ -30,7 +31,7 @@ class TestGame:
 
 class TestAgent:
     def setup(self):
-        self.agent = a_s.core.Agent("test agent")
+        self.agent = a_s.agents.agent.Agent("test agent")
 
     def test_name(self):
         assert self.agent.name == "test agent"

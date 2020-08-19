@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-
 import sys
-from ..core import Agent
+
+from .agent import Agent
 
 
 class FileAgent(Agent):

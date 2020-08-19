@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-from ..core import Agent
+from.agent import Agent
 
 
 class MCTSAgent(Agent):
