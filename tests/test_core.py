@@ -1,17 +1,18 @@
-import unittest
+import pytest
 
 from .context import adversarial_search as a_s
 
 
-class TestGame(unittest.TestCase):
-    def setUp(self):
+class TestGame:
+    def setup(self):
         self.game = a_s.core.Game(*('A', 'B'))
 
     def test_players(self):
-        self.assertEqual(('A', 'B'), self.game.players)
+        assert self.game.players == ('A', 'B')
 
-    def assert_not_implemented(self, function, *args):
-        with self.assertRaises(NotImplementedError):
+    @staticmethod
+    def assert_not_implemented(function, *args):
+        with pytest.raises(NotImplementedError):
             function(*args)
 
     def test_active_player(self):
@@ -27,24 +28,18 @@ class TestGame(unittest.TestCase):
         self.assert_not_implemented(self.game.next, "move")
 
 
-class TestAgent(unittest.TestCase):
-    def setUp(self):
+class TestAgent:
+    def setup(self):
         self.agent = a_s.core.Agent("test agent")
 
     def test_name(self):
-        self.assertEqual("test agent", self.agent.name)
+        assert self.agent.name == "test agent"
 
     def test_decision(self):
-        move = self.agent.decision(a_s.core.Game(), *['1', '2', '3'])
-        self.assertEqual('1', move)
+        assert self.agent.decision(a_s.core.Game(), *['1', '2', '3']) == '1'
 
     def test__decision(self):
-        move = self.agent._decision(['1', '2', '3'])
-        self.assertEqual('1', move)
+        assert self.agent._decision(['1', '2', '3']) == '1'
 
     def test_str(self):
-        self.assertEqual("test agent(None)", str(self.agent))
-
-
-if __name__ == '__main__':
-    unittest.main()
+        assert str(self.agent) == "test agent(None)"
