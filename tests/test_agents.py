@@ -21,6 +21,23 @@ AGENTS = [
 ]
 
 
+class TestBaseAgent:
+    def setup(self):
+        self.agent = a_s.agents.agent.Agent("test agent")
+
+    def test_name(self):
+        assert self.agent.name == "test agent"
+
+    def test_decision(self):
+        assert self.agent.decision(a_s.core.Game(), *['1', '2', '3']) == '1'
+
+    def test__decision(self):
+        assert self.agent._decision(['1', '2', '3']) == '1'
+
+    def test_str(self):
+        assert str(self.agent) == "test agent(None)"
+
+
 class TestAgents:
     """ Basic test cases for agents behaviour.
     """
