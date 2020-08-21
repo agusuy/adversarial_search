@@ -37,7 +37,7 @@ class FileAgent(Agent):
         self.out_file.write('# %s ends the match with %s (%.4f).\n' % (self, outcome, result))
         self.out_file.flush()
 
-    def _decision(self, moves):
+    def _decision(self, moves, game=None):
         """ Writes all available moves and reads the decision from `in_file`. Each move must be in a
             separate line. All lines starting with a '#' are ignored.
         """

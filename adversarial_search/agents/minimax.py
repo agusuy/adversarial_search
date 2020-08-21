@@ -10,13 +10,13 @@ class MiniMaxAgent(Agent):
         self.horizon = horizon
         # An instance of random.Random or equivalent is expected, else an 
         # integer seed or None to create a random.Random.
-        self.random = self.randgen(random)
+        self.random = self.rand_gen(random)
         self.__heuristic__ = heuristic
 
-    def decision(self, game, *moves):
-        nexts = [(move, self._minimax(game.next(move), 1)) for move in game.moves()]
-        max_val = max([val for (_, val) in nexts])
-        return self.random.choice([move for (move, val) in nexts if val == max_val])
+    def _decision(self, moves, game):
+        next_game_states = [(move, self._minimax(game.next(move), 1)) for move in moves]
+        max_val = max([val for (_, val) in next_game_states])
+        return self.random.choice([move for (move, val) in next_game_states if val == max_val])
 
     def terminal_value(self, game, depth):
         """ Returns a result if node is terminal or maximum depth has been reached; else returns 

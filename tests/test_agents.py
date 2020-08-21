@@ -28,11 +28,11 @@ class TestBaseAgent:
     def test_name(self):
         assert self.agent.name == "test agent"
 
-    def test_decision(self):
-        assert self.agent.decision(a_s.core.Game(), *['1', '2', '3']) == '1'
+    def test_select_move(self):
+        assert self.agent.select_move(a_s.core.Game(), *['1', '2', '3']) == '1'
 
     def test__decision(self):
-        assert self.agent._decision(['1', '2', '3']) == '1'
+        assert self.agent._decision(['1', '2', '3'], None) == '1'
 
     def test_str(self):
         assert str(self.agent) == "test agent(None)"

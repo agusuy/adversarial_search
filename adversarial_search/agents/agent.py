@@ -9,17 +9,17 @@ class Agent(object):
         self.name = name
         self.player = None
 
-    def decision(self, game, *moves):
+    def select_move(self, game, *moves):
         """ Agents move choice. If no moves are provided, choices are retrieved from the game.
         """
         if not moves:
             moves = game.moves()
             if not moves:
                 return None
-        return self._decision(moves)
+        return self._decision(moves, game)
 
-    def _decision(self, moves):
-        """ Method called by Agent.decision() to actually make the choice of move. This should be
+    def _decision(self, moves, game):
+        """ Method called by Agent.select_move() to actually make the choice of move. This should be
             overridden by subclasses.
         """
         return moves[0]  # Please do not use this default implementation.
@@ -47,7 +47,8 @@ class Agent(object):
     def __hash__(self):
         return self.name.__hash__()
 
-    def randgen(self, x):
+    @staticmethod
+    def rand_gen(x):
         """ If x is `None` or `int` or `long`, returns random.Random(x), else returns x.
         """
         return random.Random(x) if x is None or type(x) == int else x

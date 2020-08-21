@@ -61,7 +61,7 @@ def match(game, *agents_list, **agents):
     yield (move_num, agents, game)
     results = game.results()
     while not results:  # Game is not over.
-        chosen_move = agents[game.active_player()].decision(game)
+        chosen_move = agents[game.active_player()].select_move(game)
         next_game = game.next(chosen_move)
         for player, agent in agents.items():  # Tells all agents about the moves.
             agent.match_moves(game, chosen_move, next_game)
