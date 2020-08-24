@@ -79,7 +79,6 @@ class TestBaseAgent:
         assert str(self.agent) == "test agent(None)"
 
 
-class TestAgents:
 class TestSanityAgents:
     """ Basic test cases for agents behaviour.
     """
