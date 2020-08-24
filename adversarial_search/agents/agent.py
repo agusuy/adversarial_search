@@ -1,7 +1,9 @@
 import random
 
+from abc import ABC, abstractmethod
 
-class Agent(object):
+
+class Agent(ABC):
     """ Base class for agents participating in games.
     """
 
@@ -18,11 +20,12 @@ class Agent(object):
                 return None
         return self._decision(moves, game)
 
+    @abstractmethod
     def _decision(self, moves, game):
         """ Method called by Agent.select_move() to actually make the choice of move. This should be
             overridden by subclasses.
         """
-        return moves[0]  # Please do not use this default implementation.
+        pass
 
     def match_begins(self, player, game):
         """ Tells the agent that a match he is participating in is starting. This should not be

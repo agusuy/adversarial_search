@@ -1,2 +1,1 @@
-# -*- coding: utf-8 -*-
-from . import random, files, minimax, alphabeta, mcts
+from . import agent, random, files, minimax, alphabeta, mcts
