@@ -2,6 +2,7 @@
 """
 import random
 from itertools import combinations
+from unittest.mock import patch
 
 import pytest
 
@@ -21,24 +22,65 @@ AGENTS = [
 ]
 
 
+@pytest.fixture
+def game():
+    return a_s.core.Game()
+
+
 class TestBaseAgent:
+    @patch.object(a_s.agents.agent.Agent, '__abstractmethods__', set())
     def setup(self):
         self.agent = a_s.agents.agent.Agent("test agent")
+
+    def test_init(self):
+        with pytest.raises(TypeError) as e:
+            a_s.agents.agent.Agent("test agent")
+        assert "Can't instantiate abstract class %s" % a_s.agents.agent.Agent.__name__ in str(e.value)
 
     def test_name(self):
         assert self.agent.name == "test agent"
 
-    def test_select_move(self):
-        assert self.agent.select_move(a_s.core.Game(), *['1', '2', '3']) == '1'
+    @patch.object(a_s.agents.agent.Agent, '_decision', return_value='1')
+    @patch.object(a_s.core.Game, 'moves')
+    def test_select_move(self, mock_moves, mock_decision, game):
+        assert self.agent.select_move(game, *['1', '2', '3']) == '1'
+        mock_decision.assert_called_once_with(('1', '2', '3'), game)
+        mock_moves.assert_not_called()
+
+    @patch.object(a_s.agents.agent.Agent, '_decision', return_value='1')
+    @patch.object(a_s.core.Game, 'moves', return_value=('1', '2', '3'))
+    def test_select_move__no_moves_parameter(self, mock_moves, mock_decision, game):
+        assert self.agent.select_move(game) == '1'
+        mock_moves.assert_called_once()
+        mock_decision.assert_called_once_with(('1', '2', '3'), game)
+
+    @patch.object(a_s.agents.agent.Agent, '_decision')
+    @patch.object(a_s.core.Game, 'moves', return_value=None)
+    def test_select_move__no_moves(self, mock_moves, mock_decision, game):
+        assert self.agent.select_move(game) is None
+        mock_moves.assert_called_once()
+        mock_decision.assert_not_called()
 
     def test__decision(self):
-        assert self.agent._decision(['1', '2', '3'], None) == '1'
+        assert self.agent._decision(['1', '2', '3'], None) is None
+
+    def test_match_begins(self, game):
+        assert self.agent.player is None
+        self.agent.match_begins("player", game)
+        assert self.agent.player == "player"
+
+    def test_match_moves(self, game):
+        assert self.agent.match_moves(game, "1", game) is None
+
+    def test_match_ends(self, game):
+        assert self.agent.match_ends(game) is None
 
     def test_str(self):
         assert str(self.agent) == "test agent(None)"
 
 
 class TestAgents:
+class TestSanityAgents:
     """ Basic test cases for agents behaviour.
     """
 
