@@ -5,7 +5,7 @@ class RandomAgent(Agent):
     """ An agent that moves randomly.
     """
 
-    def __init__(self, random=None, name='RandomAgent'):
+    def __init__(self, name='RandomAgent', random=None):
         Agent.__init__(self, name)
         # An instance of random.Random or equivalent is expected, else an 
         # integer seed or None to create a random.Random.

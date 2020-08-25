@@ -81,6 +81,21 @@ class TestBaseAgent:
         assert str(self.agent) == "test agent(player)"
 
 
+class TestRandomAgent:
+    def setup(self):
+        self.agent = RandomAgent(name="test agent")
+
+    def test_init(self):
+        agent = RandomAgent(name="test agent")
+        assert isinstance(agent, RandomAgent)
+        assert isinstance(agent.random, random.Random)
+
+    def test__decision(self):
+        moves = ['1', '2', '3']
+        move = self.agent._decision(moves)
+        assert move in moves
+
+
 class TestSanityAgents:
     """ Basic test cases for agents behaviour.
     """
