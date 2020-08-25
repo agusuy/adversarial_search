@@ -9,6 +9,7 @@ import pytest
 from .context import adversarial_search as a_s
 from .test_games import Silly
 
+Agent = a_s.agents.agent.Agent
 RandomAgent = a_s.agents.random.RandomAgent
 MiniMaxAgent = a_s.agents.minimax.MiniMaxAgent
 AlphaBetaAgent = a_s.agents.alphabeta.AlphaBetaAgent
@@ -28,33 +29,33 @@ def game():
 
 
 class TestBaseAgent:
-    @patch.object(a_s.agents.agent.Agent, '__abstractmethods__', set())
+    @patch.object(Agent, '__abstractmethods__', set())
     def setup(self):
         self.agent = a_s.agents.agent.Agent("test agent")
 
     def test_init(self):
         with pytest.raises(TypeError) as e:
-            a_s.agents.agent.Agent("test agent")
-        assert "Can't instantiate abstract class %s" % a_s.agents.agent.Agent.__name__ in str(e.value)
+            Agent("test agent")
+        assert "Can't instantiate abstract class %s" % Agent.__name__ in str(e.value)
 
     def test_name(self):
         assert self.agent.name == "test agent"
 
-    @patch.object(a_s.agents.agent.Agent, '_decision', return_value='1')
+    @patch.object(Agent, '_decision', return_value='1')
     @patch.object(a_s.core.Game, 'moves')
     def test_select_move(self, mock_moves, mock_decision, game):
         assert self.agent.select_move(game, *['1', '2', '3']) == '1'
         mock_decision.assert_called_once_with(('1', '2', '3'), game)
         mock_moves.assert_not_called()
 
-    @patch.object(a_s.agents.agent.Agent, '_decision', return_value='1')
+    @patch.object(Agent, '_decision', return_value='1')
     @patch.object(a_s.core.Game, 'moves', return_value=('1', '2', '3'))
     def test_select_move__no_moves_parameter(self, mock_moves, mock_decision, game):
         assert self.agent.select_move(game) == '1'
         mock_moves.assert_called_once()
         mock_decision.assert_called_once_with(('1', '2', '3'), game)
 
-    @patch.object(a_s.agents.agent.Agent, '_decision')
+    @patch.object(Agent, '_decision')
     @patch.object(a_s.core.Game, 'moves', return_value=None)
     def test_select_move__no_moves(self, mock_moves, mock_decision, game):
         assert self.agent.select_move(game) is None
@@ -76,7 +77,8 @@ class TestBaseAgent:
         assert self.agent.match_ends(game) is None
 
     def test_str(self):
-        assert str(self.agent) == "test agent(None)"
+        self.agent.player = "player"
+        assert str(self.agent) == "test agent(player)"
 
 
 class TestSanityAgents:
