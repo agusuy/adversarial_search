@@ -45,21 +45,21 @@ class TestBaseAgent:
     @patch.object(a_s.core.Game, 'moves')
     def test_select_move(self, mock_moves, mock_decision, game):
         assert self.agent.select_move(game, *['1', '2', '3']) == '1'
-        mock_decision.assert_called_once_with(('1', '2', '3'), game)
         mock_moves.assert_not_called()
+        mock_decision.assert_called_once_with(('1', '2', '3'), game)
 
     @patch.object(Agent, '_decision', return_value='1')
     @patch.object(a_s.core.Game, 'moves', return_value=('1', '2', '3'))
     def test_select_move__no_moves_parameter(self, mock_moves, mock_decision, game):
         assert self.agent.select_move(game) == '1'
-        mock_moves.assert_called_once()
+        mock_moves.assert_called_once_with()
         mock_decision.assert_called_once_with(('1', '2', '3'), game)
 
     @patch.object(Agent, '_decision')
     @patch.object(a_s.core.Game, 'moves', return_value=None)
     def test_select_move__no_moves(self, mock_moves, mock_decision, game):
         assert self.agent.select_move(game) is None
-        mock_moves.assert_called_once()
+        mock_moves.assert_called_once_with()
         mock_decision.assert_not_called()
 
     def test__decision(self):
