@@ -86,11 +86,24 @@ class TestRandomAgent:
         self.agent = RandomAgent(name="test agent")
 
     def test_init(self):
-        agent = RandomAgent(name="test agent")
-        assert isinstance(agent, RandomAgent)
-        assert isinstance(agent.random, random.Random)
+        assert issubclass(RandomAgent, Agent)
+        assert isinstance(self.agent, RandomAgent)
+        assert isinstance(self.agent.random, random.Random)
+
+    def test__decision__result(self):
+        moves = ['1', '2', '3']
+        move = self.agent._decision(moves)
+        assert move in moves
 
     def test__decision(self):
+        moves = ['1', '2', '3']
+        with patch.object(self.agent, 'random') as mock_random:
+            mock_random.choice.return_value = "2"
+            move = self.agent._decision(moves)
+            mock_random.choice.assert_called_once_with(moves)
+        assert move == "2"
+
+
         moves = ['1', '2', '3']
         move = self.agent._decision(moves)
         assert move in moves
