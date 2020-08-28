@@ -2,7 +2,7 @@
 """
 import random
 from itertools import combinations
-from unittest.mock import patch
+from unittest.mock import patch, call
 
 import pytest
 
@@ -104,11 +104,77 @@ class TestRandomAgent:
         assert move == "2"
 
 
+class TestMiniMaxAgent:
+    def setup(self):
+        self.agent = MiniMaxAgent(name="test agent")
+
+    def test_init(self):
+        assert issubclass(MiniMaxAgent, Agent)
+        assert isinstance(self.agent, MiniMaxAgent)
+        assert isinstance(self.agent.horizon, int)
+        assert isinstance(self.agent.random, random.Random)
+
+    @patch.object(MiniMaxAgent, '_minimax', return_value=1)
+    @patch.object(a_s.core.Game, 'next', return_value=game)
+    def test__decision(self, mock_game_next, mock__minimax, game):
         moves = ['1', '2', '3']
-        move = self.agent._decision(moves)
+        move = self.agent._decision(moves, game)
+
+        assert mock_game_next.call_count == len(moves)
+        mock_game_next.assert_has_calls([call(move) for move in moves])
+        assert mock__minimax.call_count == len(moves)
+        mock__minimax.assert_has_calls([call(mock_game_next.return_value, 1)]*len(moves))
         assert move in moves
 
+    @patch.object(MiniMaxAgent, 'heuristic')
+    @patch.object(a_s.core.Game, 'results', return_value={'A': 1})
+    def test_terminal_value__game_ended(self, mock_results, mock_heuristic, game):
+        self.agent.player = "A"
+        result = self.agent.terminal_value(game, 1)
+        mock_results.assert_called_once_with()
+        assert result == mock_results.return_value[self.agent.player]
+        mock_heuristic.assert_not_called()
 
+    @pytest.mark.parametrize("horizon_delta, value",
+                             [(-1, None),
+                              (0, 1),
+                              (1, 1),
+                              ])
+    @patch.object(MiniMaxAgent, 'heuristic')
+    @patch.object(a_s.core.Game, 'results', return_value={})
+    def test_terminal_value__game_not_ended(self, mock_results, mock_heuristic, horizon_delta, value, game):
+        depth = self.agent.horizon + horizon_delta
+        mock_heuristic.return_value = value
+        result = self.agent.terminal_value(game, depth)
+        mock_results.assert_called_once_with()
+        if value:
+            mock_heuristic.assert_called_once_with(game, depth)
+        else:
+            mock_heuristic.assert_not_called()
+        assert result == value
+
+    @patch.object(MiniMaxAgent, 'terminal_value', return_value=-1)
+    def test__minimax__terminal(self, mock_terminal_value, game):
+        depth = 1
+        result = self.agent._minimax(game, depth)
+        mock_terminal_value.assert_called_once_with(game, depth)
+        assert result == -1
+
+    def test_heuristic__no_function(self, game):
+        with patch.object(self.agent, 'random') as mock_random:
+            mock_random.random.return_value = 0
+            result = self.agent.heuristic(game, 1)
+            mock_random.random.assert_called_once_with()
+        assert result == -0.5
+
+    def test_heuristic(self, game):
+        with patch.object(self.agent, 'random') as mock_random, \
+                patch.object(self.agent, '__heuristic__') as mock___heuristic__:
+            mock___heuristic__.return_value = 0.5
+            result = self.agent.heuristic(game, 1)
+            mock___heuristic__.assert_called_once_with(self.agent, game, 1)
+            mock_random.assert_not_called()
+        assert result == 0.5
 class TestSanityAgents:
     """ Basic test cases for agents behaviour.
     """
