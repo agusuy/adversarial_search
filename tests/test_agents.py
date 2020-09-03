@@ -2,7 +2,7 @@
 """
 import random
 from itertools import combinations
-from unittest.mock import patch, call
+from unittest.mock import patch, call, MagicMock
 
 import pytest
 
@@ -123,7 +123,7 @@ class TestMiniMaxAgent:
         assert mock_game_next.call_count == len(moves)
         mock_game_next.assert_has_calls([call(move) for move in moves])
         assert mock__minimax.call_count == len(moves)
-        mock__minimax.assert_has_calls([call(mock_game_next.return_value, 1)]*len(moves))
+        mock__minimax.assert_has_calls([call(mock_game_next.return_value, 1)] * len(moves))
         assert move in moves
 
     @patch.object(MiniMaxAgent, 'heuristic')
@@ -160,6 +160,49 @@ class TestMiniMaxAgent:
         mock_terminal_value.assert_called_once_with(game, depth)
         assert result == -1
 
+    @patch("adversarial_search.agents.minimax.min", side_effect=min)
+    @patch("adversarial_search.agents.minimax.max", side_effect=max)
+    @patch.object(a_s.core.Game, 'next')
+    @patch.object(a_s.core.Game, 'moves', return_value=('1', '2'))
+    @patch.object(MiniMaxAgent, 'terminal_value')
+    def test__minimax(self, mock_terminal_value, mock_moves, mock_next, mock_max, mock_min, game):
+        self.agent.player = "A"
+        mock_next.return_value = game
+        game.active_player = MagicMock(side_effect=['A', 'B', 'B'])
+        mock_terminal_value.side_effect = [None, None, 1, 1, None, 1, 1]
+
+        mock__minimax = MagicMock(side_effect=self.agent._minimax)
+        self.agent._minimax = mock__minimax
+
+        depth = 1
+
+        result = self.agent._minimax(game, depth)
+
+        assert result == 1
+        assert mock_max.call_count == 1
+        assert mock_min.call_count == 2
+        assert mock_moves.call_count == 3
+        assert mock_terminal_value.call_count == 7
+        mock_terminal_value.assert_has_calls([
+            call(game, depth),
+            call(game, depth + 1),
+            call(game, depth + 2),
+            call(game, depth + 2),
+            call(game, depth + 1),
+            call(game, depth + 2),
+            call(game, depth + 2)
+        ])
+        assert mock__minimax.call_count == 7
+        mock__minimax.assert_has_calls([
+            call(game, depth),
+            call(game, depth + 1),
+            call(game, depth + 2),
+            call(game, depth + 2),
+            call(game, depth + 1),
+            call(game, depth + 2),
+            call(game, depth + 2),
+        ])
+
     def test_heuristic__no_function(self, game):
         with patch.object(self.agent, 'random') as mock_random:
             mock_random.random.return_value = 0
@@ -175,6 +218,8 @@ class TestMiniMaxAgent:
             mock___heuristic__.assert_called_once_with(self.agent, game, 1)
             mock_random.assert_not_called()
         assert result == 0.5
+
+
 class TestSanityAgents:
     """ Basic test cases for agents behaviour.
     """
