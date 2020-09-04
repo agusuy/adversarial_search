@@ -219,6 +219,20 @@ class TestMiniMaxAgent:
         assert result == 0.5
 
 
+class TestAlphaBetaAgent:
+    def setup(self):
+        self.agent = AlphaBetaAgent(name="test agent")
+
+    def test_init(self):
+        assert issubclass(AlphaBetaAgent, Agent)
+        assert isinstance(self.agent, AlphaBetaAgent)
+
+    @patch.object(AlphaBetaAgent, 'terminal_value', return_value=-1)
+    def test__minimax__terminal(self, mock_terminal_value):
+        depth = 1
+        result = self.agent._minimax(game, depth)
+        mock_terminal_value.assert_called_once_with(game, depth)
+        assert result == -1
 class TestSanityAgents:
     """ Basic test cases for agents behaviour.
     """
