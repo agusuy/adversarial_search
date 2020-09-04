@@ -162,14 +162,13 @@ class TestMiniMaxAgent:
 
     @patch("adversarial_search.agents.minimax.min", side_effect=min)
     @patch("adversarial_search.agents.minimax.max", side_effect=max)
+    @patch.object(a_s.core.Game, 'active_player', side_effect=['A', 'B', 'B'])
     @patch.object(a_s.core.Game, 'next')
     @patch.object(a_s.core.Game, 'moves', return_value=('1', '2'))
-    @patch.object(MiniMaxAgent, 'terminal_value')
-    def test__minimax(self, mock_terminal_value, mock_moves, mock_next, mock_max, mock_min, game):
+    @patch.object(MiniMaxAgent, 'terminal_value', side_effect=[None, None, 1, 1, None, 1, 1])
+    def test__minimax(self, mock_terminal_value, mock_moves, mock_next, mock_active_player, mock_max, mock_min, game):
         self.agent.player = "A"
         mock_next.return_value = game
-        game.active_player = MagicMock(side_effect=['A', 'B', 'B'])
-        mock_terminal_value.side_effect = [None, None, 1, 1, None, 1, 1]
 
         mock__minimax = MagicMock(side_effect=self.agent._minimax)
         self.agent._minimax = mock__minimax
