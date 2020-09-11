@@ -22,10 +22,8 @@ AGENTS = [
     MCTSAgent,
 ]
 
-
-@pytest.fixture
-def game():
-    return a_s.core.Game()
+INF = a_s.agents.alphabeta.INFINITE
+TEST_GAME = a_s.core.Game()
 
 
 class TestBaseAgent:
@@ -43,38 +41,38 @@ class TestBaseAgent:
 
     @patch.object(Agent, '_decision', return_value='1')
     @patch.object(a_s.core.Game, 'moves')
-    def test_select_move(self, mock_moves, mock_decision, game):
-        assert self.agent.select_move(game, *['1', '2', '3']) == '1'
+    def test_select_move(self, mock_moves, mock_decision):
+        assert self.agent.select_move(TEST_GAME, *['1', '2', '3']) == '1'
         mock_moves.assert_not_called()
-        mock_decision.assert_called_once_with(('1', '2', '3'), game)
+        mock_decision.assert_called_once_with(('1', '2', '3'), TEST_GAME)
 
     @patch.object(Agent, '_decision', return_value='1')
     @patch.object(a_s.core.Game, 'moves', return_value=('1', '2', '3'))
-    def test_select_move__no_moves_parameter(self, mock_moves, mock_decision, game):
-        assert self.agent.select_move(game) == '1'
+    def test_select_move__no_moves_parameter(self, mock_moves, mock_decision):
+        assert self.agent.select_move(TEST_GAME) == '1'
         mock_moves.assert_called_once_with()
-        mock_decision.assert_called_once_with(('1', '2', '3'), game)
+        mock_decision.assert_called_once_with(('1', '2', '3'), TEST_GAME)
 
     @patch.object(Agent, '_decision')
     @patch.object(a_s.core.Game, 'moves', return_value=None)
-    def test_select_move__no_moves(self, mock_moves, mock_decision, game):
-        assert self.agent.select_move(game) is None
+    def test_select_move__no_moves(self, mock_moves, mock_decision):
+        assert self.agent.select_move(TEST_GAME) is None
         mock_moves.assert_called_once_with()
         mock_decision.assert_not_called()
 
     def test__decision(self):
         assert self.agent._decision(['1', '2', '3'], None) is None
 
-    def test_match_begins(self, game):
+    def test_match_begins(self):
         assert self.agent.player is None
-        self.agent.match_begins("player", game)
+        self.agent.match_begins("player", TEST_GAME)
         assert self.agent.player == "player"
 
-    def test_match_moves(self, game):
-        assert self.agent.match_moves(game, "1", game) is None
+    def test_match_moves(self):
+        assert self.agent.match_moves(TEST_GAME, "1", TEST_GAME) is None
 
-    def test_match_ends(self, game):
-        assert self.agent.match_ends(game) is None
+    def test_match_ends(self):
+        assert self.agent.match_ends(TEST_GAME) is None
 
     def test_str(self):
         self.agent.player = "player"
@@ -115,10 +113,10 @@ class TestMiniMaxAgent:
         assert isinstance(self.agent.random, random.Random)
 
     @patch.object(MiniMaxAgent, '_minimax', return_value=1)
-    @patch.object(a_s.core.Game, 'next', return_value=game)
-    def test__decision(self, mock_game_next, mock__minimax, game):
+    @patch.object(a_s.core.Game, 'next', return_value=TEST_GAME)
+    def test__decision(self, mock_game_next, mock__minimax):
         moves = ['1', '2', '3']
-        move = self.agent._decision(moves, game)
+        move = self.agent._decision(moves, TEST_GAME)
 
         assert mock_game_next.call_count == len(moves)
         mock_game_next.assert_has_calls([call(move) for move in moves])
@@ -128,9 +126,9 @@ class TestMiniMaxAgent:
 
     @patch.object(MiniMaxAgent, 'heuristic')
     @patch.object(a_s.core.Game, 'results', return_value={'A': 1})
-    def test_terminal_value__game_ended(self, mock_results, mock_heuristic, game):
+    def test_terminal_value__game_ended(self, mock_results, mock_heuristic):
         self.agent.player = "A"
-        result = self.agent.terminal_value(game, 1)
+        result = self.agent.terminal_value(TEST_GAME, 1)
         mock_results.assert_called_once_with()
         assert result == mock_results.return_value[self.agent.player]
         mock_heuristic.assert_not_called()
@@ -142,22 +140,22 @@ class TestMiniMaxAgent:
                               ])
     @patch.object(MiniMaxAgent, 'heuristic')
     @patch.object(a_s.core.Game, 'results', return_value={})
-    def test_terminal_value__game_not_ended(self, mock_results, mock_heuristic, horizon_delta, value, game):
+    def test_terminal_value__game_not_ended(self, mock_results, mock_heuristic, horizon_delta, value):
         depth = self.agent.horizon + horizon_delta
         mock_heuristic.return_value = value
-        result = self.agent.terminal_value(game, depth)
+        result = self.agent.terminal_value(TEST_GAME, depth)
         mock_results.assert_called_once_with()
         if value:
-            mock_heuristic.assert_called_once_with(game, depth)
+            mock_heuristic.assert_called_once_with(TEST_GAME, depth)
         else:
             mock_heuristic.assert_not_called()
         assert result == value
 
     @patch.object(MiniMaxAgent, 'terminal_value', return_value=-1)
-    def test__minimax__terminal(self, mock_terminal_value, game):
+    def test__minimax__terminal(self, mock_terminal_value):
         depth = 1
-        result = self.agent._minimax(game, depth)
-        mock_terminal_value.assert_called_once_with(game, depth)
+        result = self.agent._minimax(TEST_GAME, depth)
+        mock_terminal_value.assert_called_once_with(TEST_GAME, depth)
         assert result == -1
 
     @patch("adversarial_search.agents.minimax.min", side_effect=min)
@@ -166,16 +164,16 @@ class TestMiniMaxAgent:
     @patch.object(a_s.core.Game, 'next')
     @patch.object(a_s.core.Game, 'moves', return_value=('1', '2'))
     @patch.object(MiniMaxAgent, 'terminal_value', side_effect=[None, None, 1, 1, None, 1, 1])
-    def test__minimax(self, mock_terminal_value, mock_moves, mock_next, mock_active_player, mock_max, mock_min, game):
+    def test__minimax(self, mock_terminal_value, mock_moves, mock_next, mock_active_player, mock_max, mock_min):
         self.agent.player = "A"
-        mock_next.return_value = game
+        mock_next.return_value = TEST_GAME
 
         mock__minimax = MagicMock(side_effect=self.agent._minimax)
         self.agent._minimax = mock__minimax
 
         depth = 1
 
-        result = self.agent._minimax(game, depth)
+        result = self.agent._minimax(TEST_GAME, depth)
 
         assert result == 1
         assert mock_max.call_count == 1
@@ -183,44 +181,40 @@ class TestMiniMaxAgent:
         assert mock_moves.call_count == 3
         assert mock_terminal_value.call_count == 7
         mock_terminal_value.assert_has_calls([
-            call(game, depth),
-            call(game, depth + 1),
-            call(game, depth + 2),
-            call(game, depth + 2),
-            call(game, depth + 1),
-            call(game, depth + 2),
-            call(game, depth + 2)
+            call(TEST_GAME, depth),
+            call(TEST_GAME, depth + 1),
+            call(TEST_GAME, depth + 2),
+            call(TEST_GAME, depth + 2),
+            call(TEST_GAME, depth + 1),
+            call(TEST_GAME, depth + 2),
+            call(TEST_GAME, depth + 2)
         ])
         assert mock__minimax.call_count == 7
         mock__minimax.assert_has_calls([
-            call(game, depth),
-            call(game, depth + 1),
-            call(game, depth + 2),
-            call(game, depth + 2),
-            call(game, depth + 1),
-            call(game, depth + 2),
-            call(game, depth + 2),
+            call(TEST_GAME, depth),
+            call(TEST_GAME, depth + 1),
+            call(TEST_GAME, depth + 2),
+            call(TEST_GAME, depth + 2),
+            call(TEST_GAME, depth + 1),
+            call(TEST_GAME, depth + 2),
+            call(TEST_GAME, depth + 2),
         ])
 
-    def test_heuristic__no_function(self, game):
+    def test_heuristic__no_function(self):
         with patch.object(self.agent, 'random') as mock_random:
             mock_random.random.return_value = 0
-            result = self.agent.heuristic(game, 1)
+            result = self.agent.heuristic(TEST_GAME, 1)
             mock_random.random.assert_called_once_with()
         assert result == -0.5
 
-    def test_heuristic(self, game):
+    def test_heuristic(self):
         with patch.object(self.agent, 'random') as mock_random, \
                 patch.object(self.agent, '__heuristic__') as mock___heuristic__:
             mock___heuristic__.return_value = 0.5
-            result = self.agent.heuristic(game, 1)
-            mock___heuristic__.assert_called_once_with(self.agent, game, 1)
+            result = self.agent.heuristic(TEST_GAME, 1)
+            mock___heuristic__.assert_called_once_with(self.agent, TEST_GAME, 1)
             mock_random.assert_not_called()
         assert result == 0.5
-
-
-INF = a_s.agents.alphabeta.INFINITE
-TEST_GAME = a_s.core.Game()
 
 
 class TestAlphaBetaAgent:
@@ -234,22 +228,36 @@ class TestAlphaBetaAgent:
     @patch.object(AlphaBetaAgent, 'terminal_value', return_value=-1)
     def test__minimax__terminal(self, mock_terminal_value):
         depth = 1
-        result = self.agent._minimax(game, depth)
-        mock_terminal_value.assert_called_once_with(game, depth)
+        result = self.agent._minimax(TEST_GAME, depth)
+        mock_terminal_value.assert_called_once_with(TEST_GAME, depth)
         assert result == -1
 
     minimax_test_cases = [
-        (['A', 'B'], [None, -1, 3], [-INF, INF], 3,
+        (['A', ], [None, -1, 3], [-INF, INF], 3,
          [call(TEST_GAME, 1, -INF, INF), call(TEST_GAME, 2, -INF, INF), call(TEST_GAME, 2, -1, INF)]),
-        (['B', 'A'], [None, 3, 5], [-INF, INF], 3,
+        (['B', ], [None, 3, 5], [-INF, INF], 3,
          [call(TEST_GAME, 1, -INF, INF), call(TEST_GAME, 2, -INF, INF), call(TEST_GAME, 2, -INF, 3)]),
-        (['A', 'B'], [None, 5], [-INF, 3], 5, [call(TEST_GAME, 1, -INF, 3), call(TEST_GAME, 2, -INF, 3)]),
-        (['B', 'A'], [None, -4], [3, INF], -4, [call(TEST_GAME, 1, 3, INF), call(TEST_GAME, 2, 3, INF)]),
+        (['A', ], [None, 5], [-INF, 3], 5, [call(TEST_GAME, 1, -INF, 3), call(TEST_GAME, 2, -INF, 3)]),
+        (['B', ], [None, -4], [3, INF], -4, [call(TEST_GAME, 1, 3, INF), call(TEST_GAME, 2, 3, INF)]),
+        (['A', 'B', 'A', 'A', 'B', 'A'],
+         [None, None, None, -1, 3, None, 5, None, None, -6, -4],
+         [-INF, INF], 3,
+         [call(TEST_GAME, 1, -INF, INF),
+          call(TEST_GAME, 2, -INF, INF),
+          call(TEST_GAME, 3, -INF, INF),
+          call(TEST_GAME, 4, -INF, INF),
+          call(TEST_GAME, 4, -1, INF),
+          call(TEST_GAME, 3, -INF, 3),
+          call(TEST_GAME, 4, -INF, 3),
+          call(TEST_GAME, 2, 3, INF),
+          call(TEST_GAME, 3, 3, INF),
+          call(TEST_GAME, 4, 3, INF),
+          call(TEST_GAME, 4, 3, INF)]),
     ]
 
     @pytest.mark.parametrize(
         "active_player_returns, terminal_value_returns, call_args, expected_result, expected_calls", minimax_test_cases,
-        ids=['max_player_no_pruning', 'min_player_no_pruning', 'max_player_pruning', 'min_player_pruning'])
+        ids=['max_player_no_pruning', 'min_player_no_pruning', 'max_player_pruning', 'min_player_pruning', 'all'])
     @patch.object(a_s.core.Game, 'active_player')
     @patch.object(a_s.core.Game, 'next')
     @patch.object(a_s.core.Game, 'moves', return_value=('1', '2'))
@@ -273,7 +281,6 @@ class TestAlphaBetaAgent:
         mock__minimax.assert_has_calls(expected_calls)
 
 
-@pytest.mark.skip
 class TestSanityAgents:
     """ Basic test cases for agents behaviour.
     """
