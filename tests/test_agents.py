@@ -219,6 +219,10 @@ class TestMiniMaxAgent:
         assert result == 0.5
 
 
+INF = a_s.agents.alphabeta.INFINITE
+TEST_GAME = a_s.core.Game()
+
+
 class TestAlphaBetaAgent:
     def setup(self):
         self.agent = AlphaBetaAgent(name="test agent")
@@ -233,6 +237,43 @@ class TestAlphaBetaAgent:
         result = self.agent._minimax(game, depth)
         mock_terminal_value.assert_called_once_with(game, depth)
         assert result == -1
+
+    minimax_test_cases = [
+        (['A', 'B'], [None, -1, 3], [-INF, INF], 3,
+         [call(TEST_GAME, 1, -INF, INF), call(TEST_GAME, 2, -INF, INF), call(TEST_GAME, 2, -1, INF)]),
+        (['B', 'A'], [None, 3, 5], [-INF, INF], 3,
+         [call(TEST_GAME, 1, -INF, INF), call(TEST_GAME, 2, -INF, INF), call(TEST_GAME, 2, -INF, 3)]),
+        (['A', 'B'], [None, 5], [-INF, 3], 5, [call(TEST_GAME, 1, -INF, 3), call(TEST_GAME, 2, -INF, 3)]),
+        (['B', 'A'], [None, -4], [3, INF], -4, [call(TEST_GAME, 1, 3, INF), call(TEST_GAME, 2, 3, INF)]),
+    ]
+
+    @pytest.mark.parametrize(
+        "active_player_returns, terminal_value_returns, call_args, expected_result, expected_calls", minimax_test_cases,
+        ids=['max_player_no_pruning', 'min_player_no_pruning', 'max_player_pruning', 'min_player_pruning'])
+    @patch.object(a_s.core.Game, 'active_player')
+    @patch.object(a_s.core.Game, 'next')
+    @patch.object(a_s.core.Game, 'moves', return_value=('1', '2'))
+    @patch.object(MiniMaxAgent, 'terminal_value')
+    def test__minimax(
+            self, mock_terminal_value, mock_moves, mock_next, mock_active_player,
+            active_player_returns, terminal_value_returns, call_args, expected_result, expected_calls):
+
+        mock_active_player.side_effect = active_player_returns
+        mock_terminal_value.side_effect = terminal_value_returns
+        mock_next.return_value = TEST_GAME
+
+        self.agent.player = "A"
+
+        mock__minimax = MagicMock(side_effect=self.agent._minimax)
+        self.agent._minimax = mock__minimax
+
+        result = self.agent._minimax(TEST_GAME, 1, *call_args)
+
+        assert result == expected_result
+        mock__minimax.assert_has_calls(expected_calls)
+
+
+@pytest.mark.skip
 class TestSanityAgents:
     """ Basic test cases for agents behaviour.
     """
