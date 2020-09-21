@@ -1,10 +1,10 @@
-# -*- coding: utf-8 -*-
 import sys
-from ..core import Agent
+
+from .agent import Agent
 
 
 class FileAgent(Agent):
-    """ An agent that takes his moves from a file and keeps record of the match in another one. It
+    """ An agent that takes its moves from a file and keeps record of the match in another one. It
         is also used like a user interface using standard input and output.
     """
 
@@ -37,7 +37,7 @@ class FileAgent(Agent):
         self.out_file.write('# %s ends the match with %s (%.4f).\n' % (self, outcome, result))
         self.out_file.flush()
 
-    def _decision(self, moves):
+    def _decision(self, moves, game=None):
         """ Writes all available moves and reads the decision from `in_file`. Each move must be in a
             separate line. All lines starting with a '#' are ignored.
         """

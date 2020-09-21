@@ -1,7 +1,8 @@
-# -*- coding: utf-8 -*-
+from math import inf
+
 from .minimax import MiniMaxAgent
 
-INFINITE = 0x7FFFFFFF
+INFINITE = inf
 
 
 class AlphaBetaAgent(MiniMaxAgent):
