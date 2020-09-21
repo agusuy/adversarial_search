@@ -1,8 +1,8 @@
 # Adversarial Search Framework Tutorial
 
-The following tutorial explains the use of the Adversarial Search framework. As an example we will explain how to implement the game _"Toads and Frogs"_.
+The following tutorial explains how to use the Adversarial Search framework. As an example we will explain how to implement the game [**_Toads and Frogs_**](https://en.wikipedia.org/wiki/Toads_and_Frogs).
 
-The game consists in a strip of n positions where an x amount of toads and frogs pieces can be place, and an y amount of empty spaces following the relation n = 2*x + y. Usually all the toads to the left and all frogs to the right, and leaving the empty places in the middle. The toads will move only to the right and frogs only to the left. A piece can only move to an adjacent position only if it is empty, but if there is a piece from the other player, the piece can jump to the following position if it is empty. If non of those conditions apply, the piece has no possible movements. The game ends when a player has no possible movements to do.
+The game consists in a strip of **_n_** positions where an **_x_** amount of toads and frogs pieces can be place, and **_y_** amount of empty spaces following the relation **_n = 2\*x + y_**. Usually all the toads to the left and all frogs to the right, and leaving the empty places in the middle. The toads will move only to the right and frogs only to the left. A piece can only move to an adjacent position only if it is empty, but if there is a piece from the other player, the piece can jump to the following position if it is empty. If non of those conditions apply, the piece has no possible movements. The game ends when a player has no possible movements to do.
 
 Imagine that we have the following initial board: TT_FF, where the movements will be numbered from 0 to 4 from left to right. A possible game could be:
 
@@ -16,7 +16,7 @@ Imagine that we have the following initial board: TT_FF, where the movements wil
 |  Toads |     3    |         TFF_T        |
 |  Frogs |     _    | Frogs loose the game |
 
-In the framework directory we have the main modules **_core_** and **utils**, and the folder **agents**.
+In the framework directory we have the main modules **core** and **utils**, and the  **agents** folder.
 
 ## **core**
 
@@ -24,7 +24,7 @@ This module contains all the classes and functions required to implement and exe
 
 ### **Game**
 
-The class **Game** is the superclass for all games. To implement our game "Toads and Frogs" we have to implement a subclass of **Game**. Here we will define the game players and its constructor in the following way:
+The class **Game** is the superclass for all games. To create our "Toads and Frogs" game we have to implement a subclass of **Game**. Here we will define the game players and its constructor in the following way:
 
 ```python
 from adversarial_search.core import Game
@@ -118,6 +118,9 @@ def __repr__(self):
 We can use the following code that will call the **match** method and it iterates over the intermediate results that are generated:
 
 ```python
+from adversarial_search.agents.random import RandomAgent
+from adversarial_search.core import match
+
 agent1 = RandomAgent(name='Player 1')
 agent2 = RandomAgent(name='Player 2')
 game = ToadsFrogs(None, 0, 5, 4)
@@ -133,6 +136,9 @@ for move_number, moves, game_state in match(game, agent1, agent2):
  
  To use it we can do:
  ```python
+from adversarial_search.agents.random import RandomAgent
+from adversarial_search.core import run_match
+
 agent1 = RandomAgent(name='Player 1')
 agent2 = RandomAgent(name='Player 2')
 game = ToadsFrogs(None, 0, 5, 4)
@@ -141,10 +147,16 @@ print('Result: %s' % results)
 print('Final board: %r' % final_state)
 ```
 
-### **Agent**
+## **Agent**
 
-Also in the **core** module we have the class **Agent** that represents the behaviour of player.
+In the **agent** module we have the class **Agent** that represents the behaviour of a player.
 
-An **Agent** object will have 2 attributes: name and the type of player assigned in the game. It also defines a bunch of methods, some of them corresponding to the agent actions (**decisions**), and others are useful to notify the agent about events that are happening during the game (**match_begins**, **match_moves**, **match_ends**). **decision** will use an auxiliary method _**decision** to chose the movement to perform. This is where the intelligence of the agent resides, so this method has to be overwritten by the subclasses that implement an agent.
+An **Agent** object will have 2 attributes: name and the type of player assigned in the game. It also defines a bunch of methods, some of them corresponding to the agent actions (**select_move**), and others are useful to notify the agent about events that are happening during the game (**match_begins**, **match_moves**, **match_ends**). **select_move** will use an auxiliary method **_decision** to chose the movement to perform. This is where the intelligence of the agent resides, so this method has to be overwritten by the subclasses that implement an agent.
 
-The **agents** folder contains some implementations of agents: **AlphaBetaAgent**, **FileAgent**, **MCTSAgent**, **MiniMaxAgent**, and **RandomAgent**.
+The **agents** folder contains implementations of different Agent types: 
+* **AlphaBetaAgent**: subclass of MiniMax agent, it implements the MiniMax alpha-beta pruning optimization.
+* **FileAgent**: takes its moves from a file and keeps record of the match in another one. It can be use with the standard input and output as the user interface.
+* **MCTSAgent**: implements MonteCarlo Tree Search.
+* **MiniMaxAgent**: implementation of MiniMax. It can use an horizon parameter to limit the depth of the search and a heuristic function to evaluate terminal state nodes.
+* **RandomAgent**: determines the next move randomly.
+
