@@ -24,7 +24,7 @@ class Game(ABC):
 
     @abstractmethod
     def moves(self):
-        """ Returns all valid moves in the game state for the active player. If the game has 
+        """ Returns a sequence of all valid moves in the game state for the active player. If the game has
             finished, it should be an empty sequence.
         """
         pass
