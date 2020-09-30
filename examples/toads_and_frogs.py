@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from adversarial_search.core import Game
+from adversarial_search import Game
 from adversarial_search.utils import coord_id, print_board, game_result
 
 

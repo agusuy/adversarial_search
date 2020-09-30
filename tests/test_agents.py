@@ -23,7 +23,7 @@ AGENTS = [
 ]
 
 
-class DummyGame(a_s.core.Game):
+class DummyGame(a_s.Game):
 
     def active_player(self):
         pass
@@ -56,7 +56,7 @@ class TestBaseAgent:
         assert self.agent.name == "test agent"
 
     @patch.object(Agent, '_decision', return_value='1')
-    @patch.object(a_s.core.Game, 'moves')
+    @patch.object(DummyGame, 'moves')
     def test_select_move(self, mock_moves, mock_decision):
         assert self.agent.select_move(TEST_GAME, *['1', '2', '3']) == '1'
         mock_moves.assert_not_called()

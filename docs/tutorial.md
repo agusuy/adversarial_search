@@ -27,7 +27,7 @@ This module contains all the classes and functions required to implement and exe
 The class **Game** is the superclass for all games. To create our "Toads and Frogs" game we have to implement a subclass of **Game**. Here we will define the game players and its constructor in the following way:
 
 ```python
-from adversarial_search.core import Game
+from adversarial_search import Game
 class ToadsFrogs(Game):
     """ Game component for Toads and Frogs
     """

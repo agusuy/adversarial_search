@@ -4,7 +4,7 @@ import pytest
 
 from .context import adversarial_search as a_s
 
-Game = a_s.core.Game
+Game = a_s.Game
 utils = a_s.utils
 
 

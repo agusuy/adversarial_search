@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from adversarial_search.core import Game
+from adversarial_search import Game
 from adversarial_search.utils import coord_id, board_lines, print_board, game_result, cached_property, \
     cached_indexed_property
 
