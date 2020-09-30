@@ -19,7 +19,7 @@ class AlphaBetaAgent(MiniMaxAgent):
             return result
         moves = game.moves()
         active_player = game.active_player()
-        if active_player == self.player:
+        if active_player == self.player_type:
             for move in moves:
                 value = self._minimax(game.next(move), depth + 1, alpha, beta)
                 if alpha < value:

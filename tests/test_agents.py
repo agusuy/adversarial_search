@@ -80,9 +80,9 @@ class TestBaseAgent:
         assert self.agent._decision(['1', '2', '3'], None) is None
 
     def test_match_begins(self):
-        assert self.agent.player is None
+        assert self.agent.player_type is None
         self.agent.match_begins("player", TEST_GAME)
-        assert self.agent.player == "player"
+        assert self.agent.player_type == "player"
 
     def test_match_moves(self):
         assert self.agent.match_moves(TEST_GAME, "1", TEST_GAME) is None
@@ -91,7 +91,7 @@ class TestBaseAgent:
         assert self.agent.match_ends(TEST_GAME) is None
 
     def test_str(self):
-        self.agent.player = "player"
+        self.agent.player_type = "player"
         assert str(self.agent) == "test agent(player)"
 
 
@@ -143,10 +143,10 @@ class TestMiniMaxAgent:
     @patch.object(MiniMaxAgent, 'heuristic')
     @patch.object(DummyGame, 'results', return_value={'A': 1})
     def test_terminal_value__game_ended(self, mock_results, mock_heuristic):
-        self.agent.player = "A"
+        self.agent.player_type = "A"
         result = self.agent.terminal_value(TEST_GAME, 1)
         mock_results.assert_called_once_with()
-        assert result == mock_results.return_value[self.agent.player]
+        assert result == mock_results.return_value[self.agent.player_type]
         mock_heuristic.assert_not_called()
 
     @pytest.mark.parametrize("horizon_delta, value",
@@ -181,7 +181,7 @@ class TestMiniMaxAgent:
     @patch.object(DummyGame, 'moves', return_value=('1', '2'))
     @patch.object(MiniMaxAgent, 'terminal_value', side_effect=[None, None, 1, 1, None, 1, 1])
     def test__minimax(self, mock_terminal_value, mock_moves, mock_next, mock_active_player, mock_max, mock_min):
-        self.agent.player = "A"
+        self.agent.player_type = "A"
         mock_next.return_value = TEST_GAME
 
         mock__minimax = MagicMock(side_effect=self.agent._minimax)
@@ -285,7 +285,7 @@ class TestAlphaBetaAgent:
         mock_terminal_value.side_effect = terminal_value_returns
         mock_next.return_value = TEST_GAME
 
-        self.agent.player = "A"
+        self.agent.player_type = "A"
 
         mock__minimax = MagicMock(side_effect=self.agent._minimax)
         self.agent._minimax = mock__minimax

@@ -52,7 +52,7 @@ class TicTacToe(Game):
         square_value = {'X': 1, 'O': -1, '.': 0}
         square_factors = [0.1, -0.1, 0.1, -0.1, 0.2, -0.1, 0.1, -0.1, 0.1]
         board_value = sum([square_value[s] * p for s, p in zip(game.board, square_factors)])
-        return board_value if agent.player == 'Xs' else -board_value
+        return board_value if agent.player_type == 'Xs' else -board_value
 
 
 # Quick test #######################################################################################

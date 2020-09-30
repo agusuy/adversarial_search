@@ -9,7 +9,7 @@ class Agent(ABC):
 
     def __init__(self, name):
         self.name = name
-        self.player = None
+        self.player_type = None
 
     def select_move(self, game, *moves):
         """ Agents move choice. If no moves are provided, choices are retrieved from the game.
@@ -31,7 +31,7 @@ class Agent(ABC):
         """ Tells the agent that a match he is participating in is starting. This should not be
             called again until the match ends.
         """
-        self.player = player
+        self.player_type = player
 
     def match_moves(self, before, move, after):
         """ Tells the agent the active player have moved in the match he is participating in.
@@ -45,7 +45,7 @@ class Agent(ABC):
         pass
 
     def __str__(self):
-        return '%s(%s)' % (self.name, self.player)
+        return '%s(%s)' % (self.name, self.player_type)
 
     def __hash__(self):
         return self.name.__hash__()

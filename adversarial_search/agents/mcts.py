@@ -25,4 +25,4 @@ class MCTSAgent(Agent):
         while not results:
             game = game.next(self.random.choice(game.moves()))
             results = game.results()
-        return results[self.player]
+        return results[self.player_type]

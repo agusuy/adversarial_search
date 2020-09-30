@@ -24,7 +24,7 @@ class MiniMaxAgent(Agent):
         """
         results = game.results()
         if results:
-            return results[self.player]
+            return results[self.player_type]
         if depth >= self.horizon:
             return self.heuristic(game, depth)
         return None
@@ -32,7 +32,7 @@ class MiniMaxAgent(Agent):
     def _minimax(self, game, depth):
         result = self.terminal_value(game, depth)
         if result is None:
-            result = (max if game.active_player() == self.player else min)(
+            result = (max if game.active_player() == self.player_type else min)(
                 [self._minimax(game.next(move), depth + 1) for move in game.moves()])
         return result
 

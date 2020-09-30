@@ -32,7 +32,7 @@ class FileAgent(Agent):
         self.out_file.flush()
 
     def match_ends(self, game):
-        result = game.results()[self.player]
+        result = game.results()[self.player_type]
         outcome = 'defeat' if result < 0 else 'victory' if result > 0 else 'draw'
         self.out_file.write('# %s ends the match with %s (%.4f).\n' % (self, outcome, result))
         self.out_file.flush()
