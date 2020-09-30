@@ -57,10 +57,10 @@ class Cuanteti(Game):
 
 def run_test_game(agent1=None, agent2=None):
     if not agent1:
-        from adversarial_search.agents.mcts import MCTSAgent
+        from adversarial_search.agents import MCTSAgent
         agent1 = MCTSAgent('Computer', simulation_count=10)
     if not agent2:
-        from adversarial_search.agents.files import FileAgent
+        from adversarial_search.agents import FileAgent
         agent2 = FileAgent(name='Human')
     from adversarial_search.core import run_match
     run_match(Cuanteti(), agent1, agent2)

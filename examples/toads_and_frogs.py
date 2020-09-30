@@ -66,10 +66,10 @@ class ToadsFrogs(Game):
 
 def run_test_game(agent1=None, agent2=None):
     if not agent1:
-        from adversarial_search.agents.random import RandomAgent
+        from adversarial_search.agents import RandomAgent
         agent1 = RandomAgent(name='Computer')
     if not agent2:
-        from adversarial_search.agents.files import FileAgent
+        from adversarial_search.agents import FileAgent
         agent2 = FileAgent(name='Human')
     from adversarial_search.core import run_match
     run_match(ToadsFrogs(None, 0, 5, 4), agent1, agent2)

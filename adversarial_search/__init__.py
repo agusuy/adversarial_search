@@ -1,3 +1,3 @@
-from .core import Game
-from . import utils
 from . import agents
+from . import utils
+from .core import Game

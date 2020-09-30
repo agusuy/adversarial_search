@@ -9,11 +9,11 @@ import pytest
 from .context import adversarial_search as a_s
 from .test_games import Silly
 
-Agent = a_s.agents.agent.Agent
-RandomAgent = a_s.agents.random.RandomAgent
-MiniMaxAgent = a_s.agents.minimax.MiniMaxAgent
-AlphaBetaAgent = a_s.agents.alphabeta.AlphaBetaAgent
-MCTSAgent = a_s.agents.mcts.MCTSAgent
+Agent = a_s.agents.Agent
+RandomAgent = a_s.agents.RandomAgent
+MiniMaxAgent = a_s.agents.MiniMaxAgent
+AlphaBetaAgent = a_s.agents.AlphaBetaAgent
+MCTSAgent = a_s.agents.MCTSAgent
 
 AGENTS = [
     RandomAgent,
@@ -45,7 +45,7 @@ TEST_GAME = DummyGame()
 class TestBaseAgent:
     @patch.object(Agent, '__abstractmethods__', set())
     def setup(self):
-        self.agent = a_s.agents.agent.Agent("test agent")
+        self.agent = a_s.agents.Agent("test agent")
 
     def test_init(self):
         with pytest.raises(TypeError) as e:

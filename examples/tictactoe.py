@@ -59,10 +59,10 @@ class TicTacToe(Game):
 
 def run_test_game(agent1=None, agent2=None):
     if not agent1:
-        from adversarial_search.agents.minimax import MiniMaxAgent
+        from adversarial_search.agents import MiniMaxAgent
         agent1 = MiniMaxAgent('Computer', 3, heuristic=TicTacToe.simple_heuristic)
     if not agent2:
-        from adversarial_search.agents.files import FileAgent
+        from adversarial_search.agents import FileAgent
         agent2 = FileAgent(name='Human')
     from adversarial_search.core import run_match
     run_match(TicTacToe(), agent1, agent2)

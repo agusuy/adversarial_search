@@ -118,7 +118,7 @@ def __repr__(self):
 We can use the following code that will call the **match** method and it iterates over the intermediate results that are generated:
 
 ```python
-from adversarial_search.agents.random import RandomAgent
+from adversarial_search.agents import RandomAgent
 from adversarial_search.core import match
 
 agent1 = RandomAgent(name='Player 1')
@@ -136,7 +136,7 @@ for move_number, moves, game_state in match(game, agent1, agent2):
  
  To use it we can do:
  ```python
-from adversarial_search.agents.random import RandomAgent
+from adversarial_search.agents import RandomAgent
 from adversarial_search.core import run_match
 
 agent1 = RandomAgent(name='Player 1')
