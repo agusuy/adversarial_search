@@ -22,8 +22,24 @@ AGENTS = [
     MCTSAgent,
 ]
 
+
+class DummyGame(a_s.core.Game):
+
+    def active_player(self):
+        pass
+
+    def moves(self):
+        pass
+
+    def results(self):
+        pass
+
+    def next(self, move):
+        pass
+
+
 INF = a_s.agents.alphabeta.INFINITE
-TEST_GAME = a_s.core.Game()
+TEST_GAME = DummyGame()
 
 
 class TestBaseAgent:
@@ -47,14 +63,14 @@ class TestBaseAgent:
         mock_decision.assert_called_once_with(('1', '2', '3'), TEST_GAME)
 
     @patch.object(Agent, '_decision', return_value='1')
-    @patch.object(a_s.core.Game, 'moves', return_value=('1', '2', '3'))
+    @patch.object(DummyGame, 'moves', return_value=('1', '2', '3'))
     def test_select_move__no_moves_parameter(self, mock_moves, mock_decision):
         assert self.agent.select_move(TEST_GAME) == '1'
         mock_moves.assert_called_once_with()
         mock_decision.assert_called_once_with(('1', '2', '3'), TEST_GAME)
 
     @patch.object(Agent, '_decision')
-    @patch.object(a_s.core.Game, 'moves', return_value=None)
+    @patch.object(DummyGame, 'moves', return_value=None)
     def test_select_move__no_moves(self, mock_moves, mock_decision):
         assert self.agent.select_move(TEST_GAME) is None
         mock_moves.assert_called_once_with()
@@ -113,7 +129,7 @@ class TestMiniMaxAgent:
         assert isinstance(self.agent.random, random.Random)
 
     @patch.object(MiniMaxAgent, '_minimax', return_value=1)
-    @patch.object(a_s.core.Game, 'next', return_value=TEST_GAME)
+    @patch.object(DummyGame, 'next', return_value=TEST_GAME)
     def test__decision(self, mock_game_next, mock__minimax):
         moves = ['1', '2', '3']
         move = self.agent._decision(moves, TEST_GAME)
@@ -125,7 +141,7 @@ class TestMiniMaxAgent:
         assert move in moves
 
     @patch.object(MiniMaxAgent, 'heuristic')
-    @patch.object(a_s.core.Game, 'results', return_value={'A': 1})
+    @patch.object(DummyGame, 'results', return_value={'A': 1})
     def test_terminal_value__game_ended(self, mock_results, mock_heuristic):
         self.agent.player = "A"
         result = self.agent.terminal_value(TEST_GAME, 1)
@@ -139,7 +155,7 @@ class TestMiniMaxAgent:
                               (1, 1),
                               ])
     @patch.object(MiniMaxAgent, 'heuristic')
-    @patch.object(a_s.core.Game, 'results', return_value={})
+    @patch.object(DummyGame, 'results', return_value={})
     def test_terminal_value__game_not_ended(self, mock_results, mock_heuristic, horizon_delta, value):
         depth = self.agent.horizon + horizon_delta
         mock_heuristic.return_value = value
@@ -160,9 +176,9 @@ class TestMiniMaxAgent:
 
     @patch("adversarial_search.agents.minimax.min", side_effect=min)
     @patch("adversarial_search.agents.minimax.max", side_effect=max)
-    @patch.object(a_s.core.Game, 'active_player', side_effect=['A', 'B', 'B'])
-    @patch.object(a_s.core.Game, 'next')
-    @patch.object(a_s.core.Game, 'moves', return_value=('1', '2'))
+    @patch.object(DummyGame, 'active_player', side_effect=['A', 'B', 'B'])
+    @patch.object(DummyGame, 'next')
+    @patch.object(DummyGame, 'moves', return_value=('1', '2'))
     @patch.object(MiniMaxAgent, 'terminal_value', side_effect=[None, None, 1, 1, None, 1, 1])
     def test__minimax(self, mock_terminal_value, mock_moves, mock_next, mock_active_player, mock_max, mock_min):
         self.agent.player = "A"
@@ -258,14 +274,13 @@ class TestAlphaBetaAgent:
     @pytest.mark.parametrize(
         "active_player_returns, terminal_value_returns, call_args, expected_result, expected_calls", minimax_test_cases,
         ids=['max_player_no_pruning', 'min_player_no_pruning', 'max_player_pruning', 'min_player_pruning', 'all'])
-    @patch.object(a_s.core.Game, 'active_player')
-    @patch.object(a_s.core.Game, 'next')
-    @patch.object(a_s.core.Game, 'moves', return_value=('1', '2'))
+    @patch.object(DummyGame, 'active_player')
+    @patch.object(DummyGame, 'next')
+    @patch.object(DummyGame, 'moves', return_value=('1', '2'))
     @patch.object(MiniMaxAgent, 'terminal_value')
     def test__minimax(
             self, mock_terminal_value, mock_moves, mock_next, mock_active_player,
             active_player_returns, terminal_value_returns, call_args, expected_result, expected_calls):
-
         mock_active_player.side_effect = active_player_returns
         mock_terminal_value.side_effect = terminal_value_returns
         mock_next.return_value = TEST_GAME

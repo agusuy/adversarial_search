@@ -1,5 +1,7 @@
+from abc import ABC, abstractmethod
 
-class Game(object):
+
+class Game(ABC):
     """ Base class for all game components. The instance represents a game state, including 
         information about the board, the pieces, the players and any other data required to continue
         the game.
@@ -14,30 +16,34 @@ class Game(object):
         """
         self.players = players
 
+    @abstractmethod
     def active_player(self):
         """ Returns the player enabled to make moves in the current game state.
         """
-        raise NotImplementedError('Class %s has not implemented method active_player.' % self.__class__.__name__)
+        pass
 
+    @abstractmethod
     def moves(self):
-        """ Returns all valid moves in the game state for the active player. If the game has 
+        """ Returns a sequence of all valid moves in the game state for the active player. If the game has
             finished, it should be an empty sequence.
         """
-        raise NotImplementedError('Class %s has not implemented method moves.' % self.__class__.__name__)
+        pass
 
+    @abstractmethod
     def results(self):
         """ Returns the results of a finished game for every player. This will be a dict of the form
             `{player:float}`. Draws are always 0, with victory results being always positive and
             defeat always negative. Must return an empty dict if the game is not finished.
         """
-        raise NotImplementedError('Class %s has not implemented method results.' % self.__class__.__name__)
+        pass
 
+    @abstractmethod
     def next(self, move):
         """ Calculates and returns the next game state applying the given move. The moves parameter
             is one of the values returned by the moves method. Result should be None if any move is
             invalid or game has ended.
         """
-        raise NotImplementedError('Class %s has not implemented method next.' % self.__class__.__name__)
+        pass
 
     def __hash__(self):
         return hash(repr(self))
