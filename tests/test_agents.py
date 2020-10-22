@@ -330,25 +330,25 @@ class TestSanityAgents:
         # Statistically MiniMax based agents should beat random agents even without a proper heuristic.
         self.assert_better_than_random(agent(), Silly())
 
+    def test_tic_tac_toe(self):
+        from examples.tictactoe import TicTacToe
 
-# TODO: Move to examples folder
-'''
-    def testTicTacToe(self):
         rand = random.Random(123456789)
         game = TicTacToe()
         minimax_agents = [MiniMaxAgent, AlphaBetaAgent]
 
         # Statistically MiniMax based agents should beat random agents even without a proper heuristic.
-        for agent in minimax_agents:
-            self.assertBetterThanRandom(agent(random=rand), game)
+        for agent_class in minimax_agents:
+            self.assert_better_than_random(agent_class(random=rand), game)
 
         # Statistically MiniMax based should improve with greater horizons.
-        for agent in minimax_agents:
-            self.assertBetterAgent(agent('Horizon1', horizon=1, random=rand),
-                                   agent('Horizon5', horizon=5, random=rand), game, 20)
+        for agent_class in minimax_agents:
+            self.assert_better_agent(agent_class('Horizon1', horizon=1, random=rand),
+                                     agent_class('Horizon5', horizon=5, random=rand), game)
 
         # Statistically in MiniMax based agents having a simple heuristic should be better than none.
-        for agent in minimax_agents:
-            self.assertBetterAgent(agent('RandomHeuristic', random=rand),
-                                   agent('SimpleHeuristic', heuristic=TicTacToe.simple_heuristic, random=rand), game)
-'''
+        for agent_class in minimax_agents:
+            self.assert_better_agent(
+                agent_class('RandomHeuristic', random=rand),
+                agent_class('SimpleHeuristic', heuristic=TicTacToe.simple_heuristic, random=rand),
+                game)
