@@ -7,7 +7,7 @@ from unittest.mock import patch, call, MagicMock
 import pytest
 
 from .context import adversarial_search as a_s
-from .test_games import Silly
+from .test_game import Silly
 
 Agent = a_s.agents.Agent
 RandomAgent = a_s.agents.RandomAgent

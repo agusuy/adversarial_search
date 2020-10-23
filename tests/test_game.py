@@ -13,15 +13,13 @@ class GameTest:
     """
 
     @staticmethod
-    def basic_test(game_class, **checks):
-        """ Simulates many games randomly checking basic behaviour of the game component. Checks
-            flags activate some asserts. Options are:
+    def basic_test(game_class):
+        """ Simulates many games randomly checking basic behaviour of the game component.
 
-            + zero_sum: checks if results sum zero.
         """
-        # TODO - player_turns: maximum number of consecutive turns a player may have.
+        # TODO - player turns: maximum number of consecutive turns a player may have.
         # TODO - alternated: checks players alternate in turns.  
-        zero_sum = checks.get('zero_sum', False)
+
         rnd = random.Random(123456)
 
         for _ in range(100):
@@ -34,11 +32,11 @@ class GameTest:
                     assert moves, "No results and no moves: %s" % game
                     # None is not a valid move.
                     assert not [m for m in moves if m is None], "None move: %r %r" % (game, moves)
+
                     game = game.next(rnd.choice(moves))
                 else:
                     assert not moves, "Results and moves: %r %r %r" % (game, results, moves)
                     # Zero sum results check.
-                    assert zero_sum
                     assert sum(results.values()) == 0, "Nonzero sum: %r %r" % (game, results)
 
                     break
@@ -124,7 +122,7 @@ class TestGameSilly(GameTest):
     """
 
     def test_basic(self):
-        self.basic_test(Silly, zero_sum=True, enabled_players=1)
+        self.basic_test(Silly)
 
     @pytest.mark.parametrize("game, trace, results",
                              [(Silly(), ('AA+',), {'A': 1, 'B': -1}),
@@ -153,74 +151,3 @@ class TestGameSilly(GameTest):
                               ])
     def test_text(self, game, trace, results):
         self.trace_test_text(game, trace, **results)
-
-
-# TODO: Move to examples folder
-'''
-TicTacToe = a_s.games.tictactoe.TicTacToe
-
-
-class TestTicTacToe(GameTest):
-    """ TicTacToe test cases.
-    """
-
-    def test_basic(self):
-        self.basic_test(TicTacToe, zero_sum=True, enabled_players=1)
-
-    def test_traces(self):
-        self.trace_test_text(TicTacToe(), """\
-            X[.........] Xs b2
-            O[....X....] Os a1
-            X[O...X....] Xs a2
-            O[OX..X....] Os a3
-            X[OXO.X....] Xs c2
-            """, Xs=1, Os=-1)
-        self.trace_test_text(TicTacToe(), """\
-            X[.........] Xs a2
-            O[.X.......] Os b2
-            X[.X..O....] Xs c2
-            O[.X..O..X.] Os a1
-            X[OX..O..X.] Xs a3
-            O[OXX.O..X.] Os c3
-            """, Xs=-1, Os=1)
-
-
-Toads_Frogs = a_s.games.toads_and_frogs.ToadsFrogs
-
-
-class TestToadsFrogs(GameTest):
-    """ Toads and Frogs test cases
-    """
-
-    def test_basic(self):
-        self.basic_test(Toads_Frogs, zero_sum=True, enabled_players=1)
-
-    def test_trace(self):
-        self.trace_test_text(Toads_Frogs(None, 0, 3, 2), """\
-            T[TTT__FFF] Toads a3
-            F[TT_T_FFF] Frogs a6
-            T[TT_TF_FF] Toads a2
-            F[T_TTF_FF] Frogs a7
-            T[T_TTFF_F] Toads a1
-            F[_TTTFF_F] Frogs a8
-            """, Toads=-1, Frogs=1)
-
-        self.trace_test_text(Toads_Frogs(None, 0, 2, 1), """\
-            T[TT_FF] Toads a2
-            F[T_TFF] Frogs a4
-            T[TFT_F] Toads a3
-            F[TF_TF] Frogs a5
-            T[TFFT_] Toads a4
-            """, Toads=1, Frogs=-1)
-
-
-Cuanteti = a_s.games.cuanteti.cuanteti
-
-
-class TestCuanteti(GameTest):
-    """ Cuanteti test cases.
-    """
-
-    def test_basic(self):
-        self.basic_test(Cuanteti, zero_sum=True, enabled_players=1)
-'''
