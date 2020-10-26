@@ -124,30 +124,30 @@ class TestGameSilly(GameTest):
     def test_basic(self):
         self.basic_test(Silly)
 
-    @pytest.mark.parametrize("game, trace, results",
-                             [(Silly(), ('AA+',), {'A': 1, 'B': -1}),
-                              (Silly(), ('AA=',), {'A': 0, 'B': 0}),
-                              (Silly(), ('AA-',), {'A': -1, 'B': 1}),
-                              (Silly(), ('AAA',), {}),
-                              (Silly(), ('AAB',), {}),
-                              (Silly(), ('AAA', 'AA+'), {'A': 1, 'B': -1}),
-                              (Silly(), ('AAA', 'AA='), {'A': 0, 'B': 0}),
-                              (Silly(), ('AAA', 'AA-'), {'A': -1, 'B': 1}),
-                              (Silly(), ('AAA', 'AAA'), {}),
-                              (Silly(), ('AAA', 'AAB'), {}),
-                              (Silly(), ('AAB', 'BB+'), {'A': -1, 'B': 1}),
-                              (Silly(), ('AAB', 'BB='), {'A': 0, 'B': 0}),
-                              (Silly(), ('AAB', 'BB-'), {'A': 1, 'B': -1}),
-                              (Silly(), ('AAB', 'BBA'), {}),
-                              (Silly(), ('AAB', 'BBB'), {}),
+    @pytest.mark.parametrize("trace, results",
+                             [(('AA+',), {'A': 1, 'B': -1}),
+                              (('AA=',), {'A': 0, 'B': 0}),
+                              (('AA-',), {'A': -1, 'B': 1}),
+                              (('AAA',), {}),
+                              (('AAB',), {}),
+                              (('AAA', 'AA+'), {'A': 1, 'B': -1}),
+                              (('AAA', 'AA='), {'A': 0, 'B': 0}),
+                              (('AAA', 'AA-'), {'A': -1, 'B': 1}),
+                              (('AAA', 'AAA'), {}),
+                              (('AAA', 'AAB'), {}),
+                              (('AAB', 'BB+'), {'A': -1, 'B': 1}),
+                              (('AAB', 'BB='), {'A': 0, 'B': 0}),
+                              (('AAB', 'BB-'), {'A': 1, 'B': -1}),
+                              (('AAB', 'BBA'), {}),
+                              (('AAB', 'BBB'), {}),
                               ])
-    def test_traces(self, game, trace, results):
+    def test_traces(self, trace, results):
         self.trace_test(Silly(), *trace, **results)
 
-    @pytest.mark.parametrize("game, trace, results",
-                             [(Silly(), 'A B\nB A\n' * 5, {}),
-                              (Silly(), 'A A\n' * 10, {}),
-                              (Silly(), 'A B\n' + 'B B\n' * 5, {}),
+    @pytest.mark.parametrize("trace, results",
+                             [('A B\nB A\n' * 5, {}),
+                              ('A A\n' * 10, {}),
+                              ('A B\n' + 'B B\n' * 5, {}),
                               ])
-    def test_text(self, game, trace, results):
-        self.trace_test_text(game, trace, **results)
+    def test_text(self, trace, results):
+        self.trace_test_text(Silly(), trace, **results)
